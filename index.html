@@ -1,0 +1,1792 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fidescope Consulting Group | See Clearly. Serve Powerfully. Stay Whole.</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,600&family=Jost:wght@200;300;400;500;600;700&family=Cinzel:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+
+/* ═══════════════════════════════════════════════════
+   DESIGN DIRECTION: Refined authority. Deep teal &
+   gold on cream. Cormorant for presence, Jost for
+   clarity. Generous space with purposeful density
+   in section breaks. A brand that commands respect
+   before a word is read.
+═══════════════════════════════════════════════════ */
+
+:root {
+  --teal:       #0B4F4F;
+  --teal-mid:   #0E6B6B;
+  --teal-light: #E0F2F2;
+  --teal-pale:  #F2FAFA;
+  --gold:       #C9973A;
+  --gold-light: #E2B96A;
+  --gold-pale:  #FBF0DA;
+  --cream:      #FAF8F3;
+  --cream-dark: #F0EDE5;
+  --charcoal:   #1C1C1C;
+  --gray:       #5A5A5A;
+  --gray-light: #8A8A8A;
+  --white:      #FFFFFF;
+  --shadow:     rgba(11,79,79,0.12);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--cream);
+  color: var(--charcoal);
+  font-family: 'Jost', sans-serif;
+  font-weight: 300;
+  overflow-x: hidden;
+}
+
+/* ── Utility ── */
+.gold-rule {
+  width: 60px; height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  margin: 0 auto;
+}
+.gold-rule.left { margin: 0; }
+
+.section-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.5em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.section-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 500;
+  color: var(--teal);
+  line-height: 1.15;
+  letter-spacing: 0.01em;
+}
+
+/* ════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════ */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  background: rgba(250,248,243,0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(201,151,58,0.2);
+  padding: 0 48px;
+  height: 68px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: box-shadow 0.3s;
+}
+nav.scrolled { box-shadow: 0 2px 24px var(--shadow); }
+
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  text-decoration: none;
+}
+.nav-logo-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+.nav-logo-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.nav-logo-name span.fide { color: var(--gold); }
+.nav-logo-name span.scope { color: var(--teal); }
+.nav-logo-sub {
+  font-family: 'Jost', sans-serif;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.35em;
+  color: var(--gray-light);
+  text-transform: uppercase;
+  margin-top: 3px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 36px;
+  list-style: none;
+}
+.nav-links a {
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--teal);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.nav-links a:hover { color: var(--gold); }
+
+.nav-cta {
+  background: var(--teal);
+  color: var(--white) !important;
+  padding: 10px 22px;
+  border-radius: 2px;
+  transition: background 0.2s !important;
+}
+.nav-cta:hover { background: var(--gold) !important; color: var(--white) !important; }
+
+/* ════════════════════════════════════════
+   HERO
+════════════════════════════════════════ */
+#hero {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  padding-top: 68px;
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-left {
+  background: var(--teal);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px 64px 80px 80px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Decorative pattern on hero left */
+.hero-left::before {
+  content: '';
+  position: absolute;
+  top: -80px; right: -80px;
+  width: 320px; height: 320px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,151,58,0.15);
+}
+.hero-left::after {
+  content: '';
+  position: absolute;
+  bottom: -60px; left: -60px;
+  width: 240px; height: 240px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,151,58,0.1);
+}
+
+.hero-eyebrow {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.5em;
+  color: var(--gold-light);
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.2s forwards;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(42px, 4.5vw, 64px);
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.4s forwards;
+}
+
+.hero-title em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.hero-tagline {
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.72);
+  line-height: 1.8;
+  max-width: 400px;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.6s forwards;
+}
+
+.hero-slogan {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--gold-light);
+  letter-spacing: 0.05em;
+  margin-bottom: 48px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.7s forwards;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 16px;
+  opacity: 0;
+  animation: fadeUp 0.8s 0.8s forwards;
+}
+
+.btn-primary {
+  background: var(--gold);
+  color: var(--white);
+  padding: 14px 32px;
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: background 0.2s, transform 0.2s;
+  display: inline-block;
+}
+.btn-primary:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+.btn-secondary {
+  border: 1px solid rgba(255,255,255,0.35);
+  color: var(--white);
+  padding: 14px 32px;
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 2px;
+  transition: border-color 0.2s, color 0.2s;
+  display: inline-block;
+}
+.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+
+.hero-right {
+  background: var(--cream);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 80px 64px;
+  position: relative;
+}
+
+/* Large eye logo in hero right */
+.hero-logo-wrap {
+  opacity: 0;
+  animation: fadeIn 1.2s 0.6s forwards;
+}
+
+/* Credential badges below logo */
+.hero-credentials {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 40px;
+  width: 100%;
+  max-width: 340px;
+  opacity: 0;
+  animation: fadeUp 0.8s 1.0s forwards;
+}
+.cred-badge {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: var(--white);
+  border: 1px solid var(--teal-light);
+  border-left: 3px solid var(--gold);
+  padding: 12px 16px;
+  border-radius: 2px;
+}
+.cred-dot {
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.cred-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--teal);
+  letter-spacing: 0.05em;
+}
+
+/* ════════════════════════════════════════
+   ABOUT
+════════════════════════════════════════ */
+#about {
+  padding: 120px 80px;
+  background: var(--white);
+  display: grid;
+  grid-template-columns: 1fr 1.4fr;
+  gap: 80px;
+  align-items: start;
+}
+
+.about-left {
+  position: sticky;
+  top: 100px;
+}
+
+.about-photo-placeholder {
+  width: 100%;
+  aspect-ratio: 3/4;
+  background: var(--teal-light);
+  border-radius: 2px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border: 1px solid rgba(11,79,79,0.12);
+  position: relative;
+  overflow: hidden;
+}
+.about-photo-placeholder::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--teal), var(--gold));
+}
+.photo-icon {
+  font-size: 64px;
+  opacity: 0.3;
+}
+.photo-caption {
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--teal);
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.about-right {}
+
+.about-intro {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 400;
+  font-style: italic;
+  color: var(--teal);
+  line-height: 1.5;
+  margin: 24px 0 32px;
+  padding-left: 24px;
+  border-left: 2px solid var(--gold);
+}
+
+.about-body {
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--gray);
+  line-height: 1.9;
+  margin-bottom: 20px;
+}
+
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin: 48px 0;
+  background: var(--teal-light);
+}
+.stat-box {
+  background: var(--white);
+  padding: 28px 20px;
+  text-align: center;
+}
+.stat-number {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 44px;
+  font-weight: 600;
+  color: var(--teal);
+  line-height: 1;
+  display: block;
+}
+.stat-label {
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.12em;
+  color: var(--gray-light);
+  text-transform: uppercase;
+  margin-top: 8px;
+  display: block;
+}
+.stat-gold { color: var(--gold); }
+
+/* ════════════════════════════════════════
+   SERVICES
+════════════════════════════════════════ */
+#services {
+  padding: 120px 80px;
+  background: var(--teal);
+  position: relative;
+  overflow: hidden;
+}
+#services::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,151,58,0.08);
+}
+#services::after {
+  content: '';
+  position: absolute;
+  bottom: -80px; left: -80px;
+  width: 380px; height: 380px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,151,58,0.06);
+}
+
+.services-header {
+  text-align: center;
+  margin-bottom: 64px;
+}
+.services-header .section-eyebrow { color: var(--gold-light); }
+.services-header .section-title { color: var(--white); }
+.services-header p {
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  max-width: 560px;
+  margin: 20px auto 0;
+  line-height: 1.8;
+}
+
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+  position: relative;
+  z-index: 1;
+}
+
+.service-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  padding: 40px 28px;
+  transition: background 0.3s, border-color 0.3s, transform 0.3s;
+  cursor: default;
+  position: relative;
+  overflow: hidden;
+}
+.service-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform 0.3s;
+}
+.service-card:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(201,151,58,0.3);
+  transform: translateY(-4px);
+}
+.service-card:hover::after { transform: scaleX(1); }
+
+.service-icon {
+  font-size: 32px;
+  margin-bottom: 20px;
+  display: block;
+}
+.service-name {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--white);
+  margin-bottom: 14px;
+  line-height: 1.2;
+}
+.service-desc {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.6);
+  line-height: 1.75;
+}
+.service-tag {
+  display: inline-block;
+  margin-top: 20px;
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--gold-light);
+  border: 1px solid rgba(201,151,58,0.3);
+  padding: 5px 12px;
+  border-radius: 1px;
+}
+
+/* ════════════════════════════════════════
+   FWI SECTION
+════════════════════════════════════════ */
+#fwi {
+  padding: 120px 80px;
+  background: var(--cream);
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.fwi-content .section-title { margin: 16px 0 28px; }
+
+.fwi-body {
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--gray);
+  line-height: 1.9;
+  margin-bottom: 20px;
+}
+
+.fwi-professions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  margin: 36px 0;
+  background: var(--teal-light);
+}
+.profession-cell {
+  background: var(--white);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.profession-dot {
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.profession-name {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--teal);
+  letter-spacing: 0.05em;
+}
+
+.fwi-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gold-pale);
+  border: 1px solid rgba(201,151,58,0.3);
+  border-left: 3px solid var(--gold);
+  padding: 12px 20px;
+  border-radius: 2px;
+  margin-top: 8px;
+}
+.fwi-status-dot {
+  width: 8px; height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+.fwi-status-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--gold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.fwi-visual {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.fwi-card {
+  background: var(--white);
+  border: 1px solid var(--teal-light);
+  border-left: 4px solid var(--teal);
+  padding: 24px 28px;
+  border-radius: 2px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.fwi-card:hover {
+  transform: translateX(4px);
+  box-shadow: 4px 0 20px var(--shadow);
+}
+.fwi-card-label {
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--gold);
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+.fwi-card-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--teal);
+}
+.fwi-card-desc {
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 300;
+  color: var(--gray);
+  margin-top: 6px;
+  line-height: 1.7;
+}
+
+/* ════════════════════════════════════════
+   PODCAST
+════════════════════════════════════════ */
+#podcast {
+  padding: 120px 80px;
+  background: var(--charcoal);
+  position: relative;
+  overflow: hidden;
+}
+#podcast::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background:
+    radial-gradient(ellipse at 20% 50%, rgba(11,79,79,0.4) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 50%, rgba(201,151,58,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.podcast-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.podcast-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(201,151,58,0.12);
+  border: 1px solid rgba(201,151,58,0.25);
+  padding: 8px 16px;
+  border-radius: 20px;
+  margin-bottom: 24px;
+}
+.podcast-badge-dot {
+  width: 6px; height: 6px;
+  background: var(--gold);
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+.podcast-badge-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: var(--gold);
+  text-transform: uppercase;
+}
+
+.podcast-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 4vw, 54px);
+  font-weight: 500;
+  color: var(--white);
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+.podcast-title em {
+  font-style: italic;
+  color: var(--gold-light);
+}
+
+.podcast-subtitle {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.55);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 28px;
+}
+
+.podcast-desc {
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.85;
+  margin-bottom: 40px;
+}
+
+.podcast-pillars {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.pillar {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  padding: 16px 18px;
+  border-radius: 2px;
+}
+.pillar-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 300;
+  color: var(--gold);
+  opacity: 0.5;
+  line-height: 1;
+}
+.pillar-name {
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.7);
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* Podcast artwork mockup */
+.podcast-artwork {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.artwork-frame {
+  width: 280px;
+  height: 280px;
+  background: linear-gradient(135deg, var(--teal) 0%, #063D3D 100%);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 24px 60px rgba(0,0,0,0.4);
+}
+.artwork-frame::before {
+  content: '';
+  position: absolute;
+  top: -40px; right: -40px;
+  width: 180px; height: 180px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,151,58,0.2);
+}
+.artwork-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 20px;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--white);
+  text-align: center;
+  padding: 0 24px;
+  line-height: 1.3;
+  position: relative;
+  z-index: 1;
+}
+.artwork-sub {
+  font-family: 'Cinzel', serif;
+  font-size: 8px;
+  letter-spacing: 0.4em;
+  color: var(--gold-light);
+  text-transform: uppercase;
+  position: relative;
+  z-index: 1;
+}
+.artwork-icon {
+  font-size: 40px;
+  position: relative;
+  z-index: 1;
+}
+.podcast-coming {
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+}
+
+/* ════════════════════════════════════════
+   TEXTBOOK
+════════════════════════════════════════ */
+#textbook {
+  padding: 120px 80px;
+  background: var(--white);
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.book-cover {
+  position: relative;
+  perspective: 1000px;
+}
+.book-spine {
+  width: 100%;
+  max-width: 340px;
+  aspect-ratio: 2/3;
+  background: linear-gradient(160deg, var(--teal) 0%, #063D3D 80%);
+  border-radius: 2px 8px 8px 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 36px;
+  box-shadow: -8px 8px 40px rgba(0,0,0,0.2), 6px 0 0 rgba(0,0,0,0.15);
+  position: relative;
+  overflow: hidden;
+  transform: rotateY(-5deg);
+  transition: transform 0.4s;
+}
+.book-spine:hover { transform: rotateY(0deg); }
+.book-spine::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  width: 24px;
+  background: rgba(0,0,0,0.15);
+}
+.book-spine::after {
+  content: '';
+  position: absolute;
+  top: 40px; right: 36px;
+  width: 60px; height: 2px;
+  background: var(--gold);
+}
+.book-publisher {
+  font-family: 'Cinzel', serif;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+}
+.book-middle {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 32px 0;
+}
+.book-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 28px;
+  font-weight: 600;
+  font-style: italic;
+  color: var(--white);
+  line-height: 1.2;
+  margin-bottom: 16px;
+}
+.book-subtitle {
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.55);
+  line-height: 1.6;
+  letter-spacing: 0.05em;
+}
+.book-gold-rule {
+  width: 40px; height: 1px;
+  background: var(--gold);
+  margin: 16px 0;
+}
+.book-author {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--gold-light);
+  letter-spacing: 0.05em;
+}
+.book-contract-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(201,151,58,0.15);
+  border: 1px solid rgba(201,151,58,0.3);
+  padding: 8px 14px;
+  border-radius: 2px;
+  width: fit-content;
+}
+.book-contract-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  color: var(--gold-light);
+  text-transform: uppercase;
+}
+
+.textbook-content {}
+.textbook-content .section-title { margin: 16px 0 28px; }
+.textbook-body {
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: var(--gray);
+  line-height: 1.9;
+  margin-bottom: 20px;
+}
+
+.chapter-preview {
+  margin: 36px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--teal-light);
+}
+.chapter-row {
+  background: var(--white);
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: background 0.2s;
+}
+.chapter-row:hover { background: var(--teal-pale); }
+.chapter-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 13px;
+  color: var(--gold);
+  font-weight: 400;
+  width: 28px;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+.chapter-name {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 300;
+  color: var(--teal);
+  letter-spacing: 0.03em;
+}
+
+.cognella-badge {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--teal-pale);
+  border: 1px solid var(--teal-light);
+  border-left: 3px solid var(--teal);
+  padding: 14px 20px;
+  border-radius: 2px;
+}
+.cognella-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--teal);
+}
+.cognella-text span {
+  font-weight: 500;
+}
+
+/* ════════════════════════════════════════
+   CONTACT
+════════════════════════════════════════ */
+#contact {
+  padding: 120px 80px;
+  background: var(--teal);
+  position: relative;
+  overflow: hidden;
+}
+#contact::before {
+  content: '';
+  position: absolute;
+  top: -120px; right: -120px;
+  width: 480px; height: 480px;
+  border-radius: 50%;
+  border: 1px solid rgba(201,151,58,0.1);
+}
+
+.contact-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  position: relative;
+  z-index: 1;
+}
+
+.contact-left .section-eyebrow { color: var(--gold-light); }
+.contact-left .section-title { color: var(--white); margin: 16px 0 28px; }
+
+.contact-desc {
+  font-family: 'Jost', sans-serif;
+  font-size: 15px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.85;
+  margin-bottom: 40px;
+}
+
+.contact-details {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.contact-icon {
+  width: 40px; height: 40px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+.contact-text {
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.75);
+  letter-spacing: 0.03em;
+}
+.contact-text a {
+  color: var(--gold-light);
+  text-decoration: none;
+}
+.contact-text a:hover { color: var(--white); }
+
+/* Contact form */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.form-group.full { grid-column: 1 / -1; }
+.form-label {
+  font-family: 'Jost', sans-serif;
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+}
+.form-input, .form-select, .form-textarea {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 2px;
+  padding: 14px 16px;
+  font-family: 'Jost', sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  color: var(--white);
+  outline: none;
+  transition: border-color 0.2s, background 0.2s;
+  width: 100%;
+}
+.form-select option { background: var(--teal); color: var(--white); }
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  border-color: var(--gold);
+  background: rgba(255,255,255,0.09);
+}
+.form-input::placeholder, .form-textarea::placeholder {
+  color: rgba(255,255,255,0.3);
+}
+.form-textarea { resize: vertical; min-height: 120px; }
+
+.form-submit {
+  background: var(--gold);
+  color: var(--white);
+  border: none;
+  padding: 16px 40px;
+  font-family: 'Jost', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  align-self: flex-start;
+}
+.form-submit:hover { background: var(--gold-light); transform: translateY(-1px); }
+
+/* ════════════════════════════════════════
+   FOOTER
+════════════════════════════════════════ */
+footer {
+  background: #0D0D0D;
+  padding: 48px 80px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.footer-logo {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 500;
+}
+.footer-logo .fide { color: var(--gold); }
+.footer-logo .scope { color: var(--white); }
+.footer-tagline {
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.15em;
+  font-style: italic;
+  margin-top: 4px;
+}
+.footer-copy {
+  font-family: 'Jost', sans-serif;
+  font-size: 11px;
+  font-weight: 300;
+  color: rgba(255,255,255,0.3);
+  letter-spacing: 0.05em;
+}
+
+/* ════════════════════════════════════════
+   ANIMATIONS
+════════════════════════════════════════ */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.85); }
+}
+
+/* Scroll reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════ NAVIGATION ═══════════════════ -->
+<nav id="navbar">
+  <a href="#hero" class="nav-logo">
+    <svg width="36" height="26" viewBox="0 0 480 340" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="nt" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#0E6B6B"/><stop offset="100%" stop-color="#0B4F4F"/>
+        </linearGradient>
+        <linearGradient id="ng" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#E2B96A"/><stop offset="100%" stop-color="#C9973A"/>
+        </linearGradient>
+        <radialGradient id="ni" cx="40%" cy="35%" r="65%">
+          <stop offset="0%" stop-color="#1E9090"/>
+          <stop offset="100%" stop-color="#063838"/>
+        </radialGradient>
+        <clipPath id="nec">
+          <path d="M 40 170 Q 240 30 440 170 Q 240 310 40 170 Z"/>
+        </clipPath>
+      </defs>
+      <path d="M 40 170 Q 240 30 440 170 Q 240 310 40 170 Z" fill="#E8F6F6"/>
+      <circle cx="240" cy="170" r="88" fill="url(#ni)" clip-path="url(#nec)"/>
+      <circle cx="240" cy="170" r="88" fill="none" stroke="url(#ng)" stroke-width="4" clip-path="url(#nec)"/>
+      <circle cx="240" cy="170" r="40" fill="#03120E" clip-path="url(#nec)"/>
+      <ellipse cx="226" cy="158" rx="12" ry="8" fill="white" opacity="0.65" clip-path="url(#nec)" transform="rotate(-20 226 158)"/>
+      <circle cx="240" cy="170" r="5" fill="url(#ng)" clip-path="url(#nec)"/>
+      <path d="M 40 170 Q 240 30 440 170" fill="none" stroke="url(#nt)" stroke-width="7" stroke-linecap="round"/>
+      <path d="M 40 170 Q 240 310 440 170" fill="none" stroke="url(#nt)" stroke-width="3.5" stroke-linecap="round" opacity="0.5"/>
+    </svg>
+    <div class="nav-logo-text">
+      <span class="nav-logo-name"><span class="fide">Fide</span><span class="scope">scope</span></span>
+      <span class="nav-logo-sub">Consulting</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#fwi">FWI</a></li>
+    <li><a href="#podcast">Podcast</a></li>
+    <li><a href="#textbook">Textbook</a></li>
+    <li><a href="#contact" class="nav-cta">Book a Consultation</a></li>
+  </ul>
+</nav>
+
+<!-- ═══════════════════ HERO ═══════════════════ -->
+<section id="hero">
+  <div class="hero-left">
+    <p class="hero-eyebrow">Fidescope Consulting Group</p>
+    <h1 class="hero-title">
+      Seeing <em>Clearly.</em><br>
+      Serving <em>Powerfully.</em><br>
+      Staying <em>Whole.</em>
+    </h1>
+    <p class="hero-tagline">
+      Evidence-based consulting for juvenile justice agencies, 
+      youth-serving organizations, and educational institutions — 
+      grounded in 23 years of field practice and doctoral research.
+    </p>
+    <p class="hero-slogan">"See clearly. Serve powerfully. Stay whole."</p>
+    <div class="hero-buttons">
+      <a href="#services" class="btn-primary">Explore Services</a>
+      <a href="#contact" class="btn-secondary">Book a Consultation</a>
+    </div>
+  </div>
+
+  <div class="hero-right">
+    <div class="hero-logo-wrap">
+      <!-- Full eye logo SVG -->
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 380" width="360" height="285">
+        <defs>
+          <linearGradient id="ht" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#0E6B6B"/><stop offset="100%" stop-color="#0B4F4F"/>
+          </linearGradient>
+          <linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#E2B96A"/><stop offset="100%" stop-color="#C9973A"/>
+          </linearGradient>
+          <radialGradient id="hs" cx="50%" cy="40%" r="60%">
+            <stop offset="0%" stop-color="#F8FEFE"/><stop offset="100%" stop-color="#DDF0F0"/>
+          </radialGradient>
+          <radialGradient id="hi" cx="40%" cy="35%" r="65%">
+            <stop offset="0%" stop-color="#1E9090"/>
+            <stop offset="50%" stop-color="#0E6060"/>
+            <stop offset="100%" stop-color="#063838"/>
+          </radialGradient>
+          <filter id="hsh">
+            <feDropShadow dx="0" dy="8" stdDeviation="20" flood-color="#0B4F4F" flood-opacity="0.2"/>
+          </filter>
+          <filter id="hls">
+            <feGaussianBlur stdDeviation="0.8"/>
+          </filter>
+          <clipPath id="hec">
+            <path d="M 55 190 Q 240 42 425 190 Q 240 338 55 190 Z"/>
+          </clipPath>
+        </defs>
+        <path d="M 55 190 Q 240 42 425 190 Q 240 338 55 190 Z"
+              fill="url(#hs)" filter="url(#hsh)"/>
+        <circle cx="240" cy="190" r="96" fill="url(#hi)" clip-path="url(#hec)"/>
+        <circle cx="240" cy="190" r="80" fill="none" stroke="#1A9090" stroke-width="1.5" clip-path="url(#hec)" opacity="0.3"/>
+        <path d="M 240 94 A 96 96 0 0 1 336 190 A 78 78 0 0 0 240 112 Z"
+              fill="url(#hg)" clip-path="url(#hec)" opacity="0.2"/>
+        <circle cx="240" cy="190" r="42" fill="#03120E" clip-path="url(#hec)"/>
+        <ellipse cx="226" cy="176" rx="13" ry="9" fill="white" opacity="0.7"
+                 clip-path="url(#hec)" transform="rotate(-20 226 176)"/>
+        <ellipse cx="252" cy="204" rx="5" ry="3" fill="white" opacity="0.3" clip-path="url(#hec)"/>
+        <circle cx="240" cy="190" r="96" fill="none" stroke="url(#hg)" stroke-width="4" clip-path="url(#hec)"/>
+        <circle cx="240" cy="190" r="6" fill="url(#hg)" clip-path="url(#hec)"/>
+        <path d="M 55 190 Q 240 42 425 190" fill="none" stroke="url(#ht)" stroke-width="8" stroke-linecap="round"/>
+        <path d="M 55 190 Q 240 338 425 190" fill="none" stroke="url(#ht)" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
+        <g stroke="url(#ht)" stroke-linecap="round" stroke-width="2.5" opacity="0.55" filter="url(#hls)">
+          <line x1="152" y1="110" x2="144" y2="92"/>
+          <line x1="192" y1="86" x2="188" y2="66"/>
+          <line x1="240" y1="76" x2="240" y2="56"/>
+          <line x1="288" y1="86" x2="292" y2="66"/>
+          <line x1="328" y1="110" x2="336" y2="92"/>
+        </g>
+        <ellipse cx="55"  cy="190" rx="9" ry="6" fill="url(#hg)" opacity="0.8"/>
+        <ellipse cx="425" cy="190" rx="9" ry="6" fill="url(#hg)" opacity="0.8"/>
+        <!-- Name below eye -->
+        <text x="68"  y="360" font-family="Georgia,serif" font-size="52" font-weight="700" fill="#C9973A">Fide</text>
+        <text x="210" y="360" font-family="Georgia,serif" font-size="52" font-weight="700" fill="#0B4F4F">scope</text>
+      </svg>
+    </div>
+
+    <div class="hero-credentials">
+      <div class="cred-badge">
+        <div class="cred-dot"></div>
+        <span class="cred-text">PhD — Industrial & Organizational Psychology</span>
+      </div>
+      <div class="cred-badge">
+        <div class="cred-dot"></div>
+        <span class="cred-text">PeopleKeys Certified Behavioral Consultant (CBC)</span>
+      </div>
+      <div class="cred-badge">
+        <div class="cred-dot"></div>
+        <span class="cred-text">SHRM-CP • 23 Years DC Superior Court</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ ABOUT ═══════════════════ -->
+<section id="about">
+  <div class="about-left reveal">
+    <div class="about-photo-placeholder">
+      <span class="photo-icon">👤</span>
+      <span class="photo-caption">Professional Photo</span>
+    </div>
+  </div>
+  <div class="about-right">
+    <p class="section-eyebrow reveal">The Principal Consultant</p>
+    <h2 class="section-title reveal reveal-delay-1">Dr. Sokoyama K.<br>Songu-Mbriwa, PhD</h2>
+    <div class="gold-rule left reveal reveal-delay-2" style="margin: 20px 0 0;"></div>
+
+    <blockquote class="about-intro reveal reveal-delay-2">
+      "I spent 23 years in DC Superior Court watching what the system 
+      did to young people — and to the professionals trying to serve them. 
+      Fidescope exists because both deserve better."
+    </blockquote>
+
+    <p class="about-body reveal reveal-delay-3">
+      Dr. Songu-Mbriwa is the founder of Fidescope Consulting Group and a 
+      practitioner-scholar with over two decades of direct experience in the 
+      District of Columbia juvenile justice system. Beginning as a Juvenile 
+      Probation Officer in DC Family Court in 2004 and rising to Supervisory 
+      Probation Officer, he brings a level of field authority that no 
+      textbook alone can produce — the authority of a man who has sat 
+      across from justice-involved youth, their families, and the systems 
+      that serve them for more than 23 years.
+    </p>
+    <p class="about-body reveal reveal-delay-3">
+      His 2024 doctoral dissertation at Grand Canyon University examined 
+      compassion fatigue and burnout among juvenile probation officers — 
+      one of the first qualitative studies to address the unique dual 
+      law enforcement and social work mandate these professionals carry. 
+      That research is the empirical foundation of Fidescope's 
+      practitioner wellness consulting practice.
+    </p>
+    <p class="about-body reveal reveal-delay-3">
+      A certified PeopleKeys Behavioral Consultant (CBC) and StudentKeys 
+      Specialist, SHRM-CP, and university faculty member at both Bard High 
+      School Early College and Prince George's Community College, 
+      Dr. Songu-Mbriwa brings the rare combination of street-level 
+      practice, doctoral-level research, and classroom-tested pedagogy 
+      to every engagement. His consulting work is shaped by his conviction 
+      that the professionals who serve justice-involved youth deserve the 
+      same quality of support and development that they give to the 
+      young people in their care.
+    </p>
+
+    <div class="about-stats reveal reveal-delay-4">
+      <div class="stat-box">
+        <span class="stat-number stat-gold">23+</span>
+        <span class="stat-label">Years JJ Practice</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-number stat-gold">2024</span>
+        <span class="stat-label">Doctoral Degree</span>
+      </div>
+      <div class="stat-box">
+        <span class="stat-number stat-gold">2027</span>
+        <span class="stat-label">Textbook Release</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ SERVICES ═══════════════════ -->
+<section id="services">
+  <div class="services-header">
+    <p class="section-eyebrow reveal">What We Offer</p>
+    <h2 class="section-title reveal reveal-delay-1">Consulting Services</h2>
+    <p class="reveal reveal-delay-2">
+      Each service is grounded in original research, certified expertise, 
+      and more than two decades of juvenile justice field experience.
+    </p>
+  </div>
+  <div class="services-grid">
+    <div class="service-card reveal">
+      <span class="service-icon">🧠</span>
+      <h3 class="service-name">DISC Behavioral Assessment & Training</h3>
+      <p class="service-desc">
+        Certified PeopleKeys workshops for juvenile justice staff, 
+        probation officers, and educators. Improves supervision 
+        relationships, team communication, and youth case planning 
+        through behavioral science.
+      </p>
+      <span class="service-tag">CBC Certified</span>
+    </div>
+    <div class="service-card reveal reveal-delay-1">
+      <span class="service-icon">🌱</span>
+      <h3 class="service-name">Compassion Fatigue & Staff Wellness</h3>
+      <p class="service-desc">
+        Training grounded in original doctoral research on compassion 
+        fatigue and burnout among juvenile probation officers. Uses the 
+        ProQOL framework and trauma-informed supervision principles.
+      </p>
+      <span class="service-tag">Research-Based</span>
+    </div>
+    <div class="service-card reveal reveal-delay-2">
+      <span class="service-icon">⚖️</span>
+      <h3 class="service-name">Juvenile Justice Consulting</h3>
+      <p class="service-desc">
+        Practitioner-grounded consulting for juvenile courts, 
+        probation departments, and community-based organizations. 
+        Program evaluation, policy review, and evidence-based 
+        practice implementation.
+      </p>
+      <span class="service-tag">23 Years Field Practice</span>
+    </div>
+    <div class="service-card reveal reveal-delay-3">
+      <span class="service-icon">📊</span>
+      <h3 class="service-name">Organizational Development</h3>
+      <p class="service-desc">
+        Curriculum design, workshop facilitation, and organizational 
+        assessment for agencies navigating staff retention, supervisory 
+        development, and culture change. SHRM-CP and I/O 
+        psychology grounded.
+      </p>
+      <span class="service-tag">SHRM-CP</span>
+    </div>
+    <div class="service-card reveal reveal-delay-4">
+      <span class="service-icon">📚</span>
+      <h3 class="service-name">Curriculum Development & Training</h3>
+      <p class="service-desc">
+        Custom curriculum development for juvenile justice agencies 
+        and educational institutions. Integrates positive psychology, 
+        VIA Character Strengths, and DISC frameworks into 
+        training design.
+      </p>
+      <span class="service-tag">StudentKeys Specialist</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ FWI ═══════════════════ -->
+<section id="fwi">
+  <div class="fwi-content">
+    <p class="section-eyebrow reveal">Proprietary Assessment Tool</p>
+    <h2 class="section-title reveal reveal-delay-1">The Fidescope<br>Wellness Index</h2>
+    <div class="gold-rule left reveal reveal-delay-2" style="margin: 20px 0 28px;"></div>
+    <p class="fwi-body reveal reveal-delay-2">
+      The Fidescope Wellness Index (FWI) is a multi-profession, non-clinical 
+      wellness awareness tool built on the ProQOL backbone — designed to help 
+      organizations and practitioners understand the wellness landscape of their 
+      people before crisis arrives, not after.
+    </p>
+    <p class="fwi-body reveal reveal-delay-3">
+      Unlike generic wellness surveys, the FWI is calibrated for the unique 
+      occupational demands of four professions that carry extraordinary human 
+      burden: juvenile justice workers, K–12 educators, attorneys, and judges. 
+      It sees what standard tools miss.
+    </p>
+
+    <div class="fwi-professions reveal reveal-delay-3">
+      <div class="profession-cell">
+        <div class="profession-dot"></div>
+        <span class="profession-name">Juvenile Justice Workers</span>
+      </div>
+      <div class="profession-cell">
+        <div class="profession-dot"></div>
+        <span class="profession-name">K–12 Educators</span>
+      </div>
+      <div class="profession-cell">
+        <div class="profession-dot"></div>
+        <span class="profession-name">Attorneys</span>
+      </div>
+      <div class="profession-cell">
+        <div class="profession-dot"></div>
+        <span class="profession-name">Judges</span>
+      </div>
+    </div>
+
+    <div class="fwi-status reveal reveal-delay-4">
+      <div class="fwi-status-dot"></div>
+      <span class="fwi-status-text">Coming Soon — app.fidescope.com</span>
+    </div>
+  </div>
+
+  <div class="fwi-visual reveal reveal-delay-2">
+    <div class="fwi-card">
+      <div class="fwi-card-label">What It Measures</div>
+      <div class="fwi-card-title">Compassion Satisfaction</div>
+      <div class="fwi-card-desc">The positive aspects of helping — the sense of meaning, purpose, and reward in the work.</div>
+    </div>
+    <div class="fwi-card">
+      <div class="fwi-card-label">What It Measures</div>
+      <div class="fwi-card-title">Burnout</div>
+      <div class="fwi-card-desc">Exhaustion, frustration, and loss of engagement — the slow erosion that precedes departure.</div>
+    </div>
+    <div class="fwi-card">
+      <div class="fwi-card-label">What It Measures</div>
+      <div class="fwi-card-title">Secondary Traumatic Stress</div>
+      <div class="fwi-card-desc">The cost of caring — trauma symptoms produced by exposure to others' suffering and trauma histories.</div>
+    </div>
+    <div class="fwi-card" style="border-left-color: var(--gold); background: var(--gold-pale);">
+      <div class="fwi-card-label">Built On</div>
+      <div class="fwi-card-title">ProQOL Framework + Original Doctoral Research</div>
+      <div class="fwi-card-desc">Grounded in the Professional Quality of Life Scale and Dr. Songu-Mbriwa's 2024 dissertation on JJ practitioner wellness.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ PODCAST ═══════════════════ -->
+<section id="podcast">
+  <div class="podcast-inner">
+    <div class="podcast-left">
+      <div class="podcast-badge">
+        <div class="podcast-badge-dot"></div>
+        <span class="podcast-badge-text">Coming Soon</span>
+      </div>
+      <h2 class="podcast-title reveal"><em>Beyond the Violation</em></h2>
+      <p class="podcast-subtitle reveal">A Fidescope Podcast</p>
+      <p class="podcast-desc reveal reveal-delay-1">
+        A conversation series for everyone who works with, advocates for, 
+        or cares about justice-involved youth. Beyond the charge. Beyond the 
+        record. Beyond the system's label — to the person underneath.
+      </p>
+      <div class="podcast-pillars reveal reveal-delay-2">
+        <div class="pillar">
+          <div class="pillar-num">01</div>
+          <div class="pillar-name">Juvenile Justice Reform & Practitioner Wellbeing</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-num">02</div>
+          <div class="pillar-name">Positive Psychology & VIA Character Strengths</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-num">03</div>
+          <div class="pillar-name">Education & Youth Development</div>
+        </div>
+        <div class="pillar">
+          <div class="pillar-num">04</div>
+          <div class="pillar-name">Faith, Purpose & Calling in the Work</div>
+        </div>
+      </div>
+    </div>
+    <div class="podcast-artwork reveal reveal-delay-2">
+      <div class="artwork-frame">
+        <span class="artwork-icon">🎙️</span>
+        <p class="artwork-title">Beyond the Violation</p>
+        <p class="artwork-sub">A Fidescope Podcast</p>
+      </div>
+      <p class="podcast-coming">New episodes coming in 2025</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ TEXTBOOK ═══════════════════ -->
+<section id="textbook">
+  <div class="book-cover reveal">
+    <div class="book-spine">
+      <div class="book-publisher">Cognella Academic Publishing</div>
+      <div class="book-middle">
+        <p class="book-title">Everchanging</p>
+        <div class="book-gold-rule"></div>
+        <p class="book-subtitle">Contemporary Social and Psychological Issues in Juvenile Justice</p>
+        <div class="book-gold-rule"></div>
+        <p class="book-author">Sokoyama K. Songu-Mbriwa, PhD</p>
+      </div>
+      <div class="book-contract-badge">
+        <span class="book-contract-text">📋 Under Contract — Expected 2027</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="textbook-content">
+    <p class="section-eyebrow reveal">Forthcoming Textbook</p>
+    <h2 class="section-title reveal reveal-delay-1"><em>Everchanging:</em><br>The Book</h2>
+    <div class="gold-rule left reveal reveal-delay-2" style="margin: 20px 0 28px;"></div>
+
+    <p class="textbook-body reveal reveal-delay-2">
+      Under contract with Cognella Academic Publishing, <em>Everchanging: 
+      Contemporary Social and Psychological Issues in Juvenile Justice</em> 
+      is the first upper-level undergraduate textbook to integrate DISC 
+      behavioral assessment and VIA Character Strengths frameworks into a 
+      comprehensive treatment of juvenile justice issues.
+    </p>
+    <p class="textbook-body reveal reveal-delay-3">
+      Drawing on 23+ years of DC Superior Court practice and original doctoral 
+      research, the textbook brings practitioner authority to every chapter — 
+      from racial and ethnic disparities to trauma-informed practice, 
+      alternatives to incarceration, and the compassion fatigue that 
+      affects the people who serve this population.
+    </p>
+
+    <div class="chapter-preview reveal reveal-delay-3">
+      <div class="chapter-row">
+        <span class="chapter-num">Ch. 6</span>
+        <span class="chapter-name">Race, School, and the Path to System Involvement</span>
+      </div>
+      <div class="chapter-row">
+        <span class="chapter-num">Ch. 9</span>
+        <span class="chapter-name">From Surviving to Thriving: Trauma-Informed Approaches</span>
+      </div>
+      <div class="chapter-row">
+        <span class="chapter-num">Ch. 11</span>
+        <span class="chapter-name">Beyond the Walls: Alternatives to Incarceration</span>
+      </div>
+      <div class="chapter-row">
+        <span class="chapter-num">Ch. 15</span>
+        <span class="chapter-name">Compassion Fatigue and Burnout in Juvenile Justice</span>
+      </div>
+    </div>
+
+    <div class="cognella-badge reveal reveal-delay-4">
+      <span style="font-size:20px;">📖</span>
+      <span class="cognella-text">
+        Published by <span>Cognella Academic Publishing</span> — 
+        Expected release <span>August 2027</span>
+      </span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ CONTACT ═══════════════════ -->
+<section id="contact">
+  <div class="contact-inner">
+    <div class="contact-left">
+      <p class="section-eyebrow reveal">Get in Touch</p>
+      <h2 class="section-title reveal reveal-delay-1">Book a<br>Consultation</h2>
+      <div class="gold-rule left reveal reveal-delay-2" style="margin: 20px 0 28px;"></div>
+      <p class="contact-desc reveal reveal-delay-2">
+        Ready to bring evidence-based training, behavioral assessment, or 
+        organizational development to your agency or institution? 
+        Start with a conversation.
+      </p>
+      <div class="contact-details reveal reveal-delay-3">
+        <div class="contact-item">
+          <div class="contact-icon">✉️</div>
+          <span class="contact-text">
+            <a href="/cdn-cgi/l/email-protection#533a3d353c13353a373620303c23367d303c3e"><span class="__cf_email__" data-cfemail="96fff8f0f9d6f0fff2f3e5f5f9e6f3b8f5f9fb">[email&#160;protected]</span></a>
+          </span>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📞</div>
+          <!-- TODO: Replace with your Google Voice business number once active -->
+          <span class="contact-text">(202) [YOUR-GOOGLE-VOICE-NUMBER]</span>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">📍</div>
+          <span class="contact-text">Washington, DC Metro Area</span>
+        </div>
+        <div class="contact-item">
+          <div class="contact-icon">🔗</div>
+          <span class="contact-text">
+            <a href="https://linkedin.com/in/sokoyama-songu-mbriwa-phd-26684637" target="_blank">
+              LinkedIn Profile
+            </a>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!--
+      FORMSPREE SETUP — 3 steps when ready to go live:
+      1. Go to formspree.io and create a free account
+      2. Create a new form — it gives you a unique URL like https://formspree.io/f/xxxxxxxx
+      3. Replace YOUR_FORMSPREE_ID below with that unique ID (just the letters/numbers after /f/)
+         Example: if your URL is https://formspree.io/f/abcd1234, use action="https://formspree.io/f/abcd1234"
+      Also remove the onsubmit="handleSubmit(event)" attribute once Formspree is active —
+      Formspree handles the submission and redirects automatically.
+    -->
+    <form class="contact-form reveal reveal-delay-2"
+          action="https://formspree.io/f/YOUR_FORMSPREE_ID"
+          method="POST"
+          onsubmit="handleSubmit(event)">
+
+      <!-- Hidden field so Formspree sends replies to your Fidescope inbox -->
+      <input type="hidden" name="_replyto" value="info@fidescope.com">
+      <input type="hidden" name="_subject" value="New Consultation Request — Fidescope">
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label">First Name</label>
+          <input type="text" name="first_name" class="form-input" placeholder="First name" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Last Name</label>
+          <input type="text" name="last_name" class="form-input" placeholder="Last name" required>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" class="form-input" placeholder="your@email.com" required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Organization</label>
+        <input type="text" name="organization" class="form-input" placeholder="Agency or institution name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Service of Interest</label>
+        <select name="service" class="form-select">
+          <option value="">Select a service...</option>
+          <option>DISC Behavioral Assessment & Training</option>
+          <option>Compassion Fatigue & Staff Wellness</option>
+          <option>Juvenile Justice Consulting</option>
+          <option>Organizational Development</option>
+          <option>Curriculum Development & Training</option>
+          <option>Fidescope Wellness Index (FWI)</option>
+          <option>Multiple Services / General Inquiry</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Message</label>
+        <textarea name="message" class="form-textarea"
+          placeholder="Tell us about your organization and what you are looking for..."></textarea>
+      </div>
+      <button type="submit" class="form-submit">Send Message</button>
+    </form>
+  </div>
+</section>
+
+<!-- ═══════════════════ FOOTER ═══════════════════ -->
+<footer>
+  <div>
+    <div class="footer-logo">
+      <span class="fide">Fide</span><span class="scope">scope</span> Consulting
+    </div>
+    <div class="footer-tagline">See clearly. Serve powerfully. Stay whole.</div>
+  </div>
+  <div class="footer-copy">
+    © 2025 Fidescope Consulting Group. Washington, DC. All rights reserved.
+  </div>
+</footer>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ── Navbar scroll effect ──
+const navbar = document.getElementById('navbar');
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 20);
+});
+
+// ── Scroll reveal ──
+const reveals = document.querySelectorAll('.reveal');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visi
