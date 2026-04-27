@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fidescope Wellness Index | FWI™</title>
+  <meta name="description" content="A compassion fatigue and burnout self-assessment for professionals in high-stakes helping fields. Grounded in the ProQOL framework."/>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { background: #0D2B45; font-family: 'Jost', sans-serif; color: #F8F4EE; }
+    input::placeholder { color: rgba(248,244,238,0.3); }
+    input:focus { outline: none; }
+    a { color: inherit; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #0D2B45; }
+    ::-webkit-scrollbar-thumb { background: rgba(200,155,60,0.3); border-radius: 3px; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+
+    // ─── Brand ────────────────────────────────────────────────────────────────
+    const C = {
+      navy:"#0D2B45", navyMid:"#112E4A", navyLight:"#163556",
+      teal:"#1A5C7A", tealLight:"#2279A0",
+      gold:"#C89B3C", goldLight:"#F0C96B",
+      cream:"#F8F4EE", muted:"rgba(248,244,238,0.62)",
+      danger:"#9B2020", success:"#1A7A4A",
+    };
+
+    // ─── Data ─────────────────────────────────────────────────────────────────
+    const PROFESSIONS = [
+      { id:"juvenile_justice", label:"Juvenile Justice Worker",      sub:"Probation officers, case managers, detention & residential staff" },
+      { id:"educator",         label:"K–12 Educator / School Staff", sub:"Teachers, school counselors, paraprofessionals, support staff" },
+      { id:"attorney",         label:"Attorney",                     sub:"Defense, prosecution, family law, civil rights practitioners" },
+      { id:"judge",            label:"Judge / Judicial Officer",     sub:"Trial judges, magistrates, commissioners, hearing officers" },
+      { id:"child_welfare",    label:"Child Welfare Professional",   sub:"CPS workers, foster care specialists, family support staff" },
+    ];
+
+    const SECTIONS = [
+      { id:"cs",  label:"Part I",   title:"Compassion Satisfaction",    intro:"The following questions explore what energizes and sustains you in your work. Answer based on how you have felt over the past 30 days." },
+      { id:"bo",  label:"Part II",  title:"Burnout",                    intro:"The following questions explore feelings of emotional exhaustion and depletion. Answer honestly — this is a private, safe reflection." },
+      { id:"sts", label:"Part III", title:"Secondary Traumatic Stress", intro:"The following questions explore how the experiences of those you serve may have affected your own wellbeing." },
+    ];
+
+    const QUESTIONS = [
+      { id:"cs1",  section:"cs",  text:"I get genuine satisfaction from helping the people I work with." },
+      { id:"cs2",  section:"cs",  text:"I feel a meaningful sense of connection to the individuals and families I serve." },
+      { id:"cs3",  section:"cs",  text:"I believe my work makes a real difference in people's lives." },
+      { id:"cs4",  section:"cs",  text:"I feel energized or encouraged when I see positive outcomes in my work." },
+      { id:"cs5",  section:"cs",  text:"I am glad I chose this profession." },
+      { id:"bo1",  section:"bo",  text:"I feel emotionally exhausted because of my work." },
+      { id:"bo2",  section:"bo",  text:"My workload feels so unmanageable that I cannot keep up." },
+      { id:"bo3",  section:"bo",  text:"I feel a sense of hopelessness about my ability to make a meaningful difference." },
+      { id:"bo4",  section:"bo",  text:"I feel trapped or stuck in my current role." },
+      { id:"bo5",  section:"bo",  text:"I feel like I am running on empty most days." },
+      { id:"sts1", section:"sts", text:"I think about difficult cases or situations from work even when I do not want to." },
+      { id:"sts2", section:"sts", text:"I have difficulty sleeping because of what I experience or witness at work." },
+      { id:"sts3", section:"sts", text:"I feel weighed down by the pain and suffering I encounter in my work." },
+      { id:"sts4", section:"sts", text:"I have started avoiding certain situations, conversations, or people because of work-related stress." },
+      { id:"sts5", section:"sts", text:"I feel as though the trauma of those I serve has personally affected me." },
+    ];
+
+    const SCALE = [
+      { value:1, label:"Never" }, { value:2, label:"Rarely" }, { value:3, label:"Sometimes" },
+      { value:4, label:"Often" }, { value:5, label:"Very Often" },
+    ];
+
+    // ─── Scoring ──────────────────────────────────────────────────────────────
+    function computeScores(a) {
+      return {
+        cs:  ["cs1","cs2","cs3","cs4","cs5"].reduce((s,k)=>s+(a[k]||0),0),
+        bo:  ["bo1","bo2","bo3","bo4","bo5"].reduce((s,k)=>s+(a[k]||0),0),
+        sts: ["sts1","sts2","sts3","sts4","sts5"].reduce((s,k)=>s+(a[k]||0),0),
+      };
+    }
+    function getQuadrant(cs,bo,sts) {
+      const csH = cs>=17, stressed = (bo>=14||sts>=14);
+      if(csH&&!stressed) return "thriving";
+      if(csH&&stressed)  return "at_risk";
+      if(!csH&&!stressed)return "languishing";
+      return "crisis";
+    }
+
+    // ─── Results Content ──────────────────────────────────────────────────────
+    const RESULTS = {
+      thriving:{
+        label:"Thriving", tagline:"Your compassion is sustaining you.",
+        color:C.success, badge:"rgba(26,122,74,0.15)", border:"rgba(26,122,74,0.4)", icon:"◆",
+        general:"Your scores reflect a healthy balance of compassion satisfaction and manageable stress. You are doing genuinely difficult work — and still finding meaning in it. That is not common. It is worth protecting.",
+        profMsg:{ juvenile_justice:"Your resilience is a model for your agency. Consider becoming a voice for systemic wellness in your organization. The field needs people who have found what you have found.", educator:"The connection you feel to your students is your greatest professional asset. Keep protecting the practices, relationships, and boundaries that make that possible.", attorney:"Maintaining compassion satisfaction in legal work is a genuine achievement. What you model in how you treat your clients and yourself matters — for everyone around you.", judge:"Your sense of purpose in the judiciary is a stabilizing force. Consider how your position creates opportunities to support the wellness of your colleagues and court staff.", child_welfare:"The families you serve are fortunate to have someone still energized by this work. Keep investing in what sustains you — and share what you know." },
+        cta:"Explore how Fidescope can help your agency build a culture that protects wellness for everyone on your team.",
+        crisis:false,
+      },
+      at_risk:{
+        label:"At Risk", tagline:"Your purpose is intact — but the strain is accumulating.",
+        color:C.gold, badge:"rgba(200,155,60,0.15)", border:"rgba(200,155,60,0.45)", icon:"◈",
+        general:"You still believe in this work — and that belief is meaningful. But conviction alone cannot sustain you through the level of stress you are experiencing. This is the window for intervention, not after burnout sets in.",
+        profMsg:{ juvenile_justice:"Juvenile justice professionals often push through warning signs because the work feels too urgent to pause. That dedication is understandable — and it is also a risk factor. The field needs you sustainable, not just willing.", educator:"You came into education with real purpose. What you are feeling now is not a sign that you chose wrongly — it is a signal that the system needs to do better by the people who carry it.", attorney:"The adversarial demands of legal work accumulate in ways that are easy to miss until they are not. Your scores suggest you are managing — but at cost. This is the right moment to intervene.", judge:"Judicial officers carry extraordinary moral weight with very little institutional support for wellbeing. What you are experiencing is the predictable cost of that responsibility.", child_welfare:"Child welfare work involves sustained exposure to family trauma with chronically insufficient resources. The toll is real, and the field underinvests in its people. You deserve better support." },
+        cta:"Fidescope's organizational wellness services are designed for agencies at exactly this inflection point. Let's talk.",
+        crisis:false,
+      },
+      languishing:{
+        label:"Languishing", tagline:"Your light hasn't gone out — but it needs tending.",
+        color:"#7A8A9A", badge:"rgba(122,138,154,0.15)", border:"rgba(122,138,154,0.4)", icon:"◇",
+        general:"You may feel disconnected from the purpose that originally drew you to this work. That disconnection is not weakness or failure — it is a signal. Compassion fatigue is real, recognizable, and reversible with the right support.",
+        profMsg:{ juvenile_justice:"Research consistently shows that disconnection in juvenile justice professionals often precedes the field's most significant departures. You are worth retaining — and more importantly, you are worth supporting.", educator:"Many educators describe this state as going through the motions. You deserve more than that — and so do the students depending on you. Recovery starts with naming what is happening.", attorney:"Legal professionals rarely discuss languishing openly, yet the bar has among the highest burnout rates of any profession. You are not alone, and reaching out is a sign of professional wisdom.", judge:"Judicial isolation can make languishing harder to detect and harder to address. Please know that seeking support is a mark of strength — not a vulnerability in your role.", child_welfare:"If you are feeling disconnected in child welfare, the system has often failed you as much as anything else. Recovery is possible. This does not have to be the end of your story in this field." },
+        cta:"Fidescope offers individual consultation and organizational wellness support. Recovery is possible — and it starts with a conversation.",
+        crisis:false,
+      },
+      crisis:{
+        label:"Crisis", tagline:"You are carrying too much. Please don't carry it alone.",
+        color:C.danger, badge:"rgba(155,32,32,0.12)", border:"rgba(155,32,32,0.4)", icon:"◉",
+        general:"What you are experiencing has a name — secondary traumatic stress — and it is not a personal failure. It is an occupational injury. Right now, you deserve real support, not a pitch for consulting services.",
+        profMsg:{ juvenile_justice:"The weight of working daily with traumatized youth carries a real and documented cost. You gave this work everything you had. Now it is time to let others help carry you.", educator:"You have been absorbing the pain of your students — often without acknowledgment or support. That empathy is your gift, and right now, it is hurting you. Please reach out.", attorney:"The law asks you to hold space for others' pain with very little room for your own. What you are feeling is the accumulation of that cost. Help is available and you deserve it.", judge:"Judicial authority cannot shield you from the human toll of what you witness and decide. Please reach out to a trusted colleague, clinician, or resource today — not tomorrow.", child_welfare:"Child welfare workers who reach this point have often been failed by under-resourced systems long before this moment. You matter — as a whole person, not just a worker." },
+        resources:true, crisis:true,
+      },
+    };
+
+    // ─── Styles ───────────────────────────────────────────────────────────────
+    const S = {
+      btn:      { background:`linear-gradient(135deg,${C.gold},${C.goldLight})`, color:C.navy, border:"none", borderRadius:"4px", padding:"13px 30px", fontFamily:"'Jost',sans-serif", fontWeight:600, fontSize:"14px", letterSpacing:"0.08em", cursor:"pointer", textTransform:"uppercase" },
+      btnGhost: { background:"transparent", color:C.cream, border:"1px solid rgba(248,244,238,0.3)", borderRadius:"4px", padding:"11px 26px", fontFamily:"'Jost',sans-serif", fontWeight:500, fontSize:"13px", letterSpacing:"0.06em", cursor:"pointer", textTransform:"uppercase" },
+      btnTeal:  { background:C.teal, color:C.cream, border:"none", borderRadius:"4px", padding:"11px 26px", fontFamily:"'Jost',sans-serif", fontWeight:500, fontSize:"13px", letterSpacing:"0.06em", cursor:"pointer" },
+      card:     { background:"rgba(255,255,255,0.04)", border:"1px solid rgba(248,244,238,0.1)", borderRadius:"8px", padding:"28px" },
+      lbl:      { fontFamily:"'Cinzel',serif", fontSize:"11px", letterSpacing:"0.18em", textTransform:"uppercase", color:C.gold },
+      body:     { fontFamily:"'Cormorant Garamond',serif", fontSize:"18px", lineHeight:1.75, fontWeight:400 },
+      ui:       { fontFamily:"'Jost',sans-serif", fontSize:"14px", lineHeight:1.6 },
+      input:    { background:"rgba(255,255,255,0.06)", border:"1px solid rgba(248,244,238,0.2)", borderRadius:"4px", padding:"12px 16px", fontFamily:"'Jost',sans-serif", fontSize:"15px", color:C.cream, width:"100%", boxSizing:"border-box" },
+    };
+
+    // ─── localStorage helpers ─────────────────────────────────────────────────
+    const STORE_KEY = "fwi_submissions";
+    function saveSubmission(data) {
+      try {
+        const existing = JSON.parse(localStorage.getItem(STORE_KEY)||"[]");
+        existing.unshift(data);
+        localStorage.setItem(STORE_KEY, JSON.stringify(existing));
+        return true;
+      } catch(e) { return false; }
+    }
+    function loadSubmissions() {
+      try { return JSON.parse(localStorage.getItem(STORE_KEY)||"[]"); }
+      catch(e) { return []; }
+    }
+    function clearSubmissions() {
+      try { localStorage.removeItem(STORE_KEY); return true; }
+      catch(e) { return false; }
+    }
+
+    // ─── PDF Generator ────────────────────────────────────────────────────────
+    function generatePDF(userData, scores, quadrant, profession) {
+      if (!window.jspdf) { alert("PDF generator loading. Please try again in a moment."); return; }
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ unit:"mm", format:"a4" });
+      const result = RESULTS[quadrant];
+      const profName = PROFESSIONS.find(p=>p.id===profession)?.label || "Professional";
+      const W = 210, m = 20;
+
+      doc.setFillColor(13,43,69);
+      doc.rect(0,0,W,44,"F");
+      doc.setTextColor(240,201,107);
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(17);
+      doc.text("FIDESCOPE WELLNESS INDEX", W/2, 16, {align:"center"});
+      doc.setTextColor(248,244,238);
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(10);
+      doc.text("FWI\u2122 \u2014 Professional Assessment Results", W/2, 24, {align:"center"});
+      doc.setFontSize(9);
+      doc.text(new Date().toLocaleDateString("en-US",{year:"numeric",month:"long",day:"numeric"}), W/2, 32, {align:"center"});
+      doc.setFillColor(200,155,60);
+      doc.rect(m,47,W-m*2,0.6,"F");
+
+      let y = 56;
+      doc.setTextColor(13,43,69);
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(14);
+      doc.text(`${userData.firstName} ${userData.lastName}`, m, y); y+=7;
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(11);
+      doc.setTextColor(40,70,90);
+      doc.text(profName, m, y); y+=6;
+      if(userData.organization){ doc.setFontSize(10); doc.setTextColor(80,100,115); doc.text(userData.organization, m, y); y+=6; }
+      if(userData.email){ doc.setFontSize(9); doc.setTextColor(120,140,155); doc.text(userData.email, m, y); y+=6; }
+
+      y+=4;
+      doc.setFillColor(200,155,60);
+      doc.roundedRect(m,y,W-m*2,18,2,2,"F");
+      doc.setTextColor(13,43,69);
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(13);
+      doc.text(result.label.toUpperCase(), W/2, y+7, {align:"center"});
+      doc.setFont("helvetica","italic");
+      doc.setFontSize(10);
+      doc.text(result.tagline, W/2, y+14, {align:"center"});
+      y+=26;
+
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(9);
+      doc.setTextColor(13,43,69);
+      doc.text("SUBSCALE SCORES", m, y); y+=5;
+      doc.setFillColor(200,155,60);
+      doc.rect(m,y,30,0.4,"F"); y+=6;
+
+      const drawBar = (label, val, clr) => {
+        doc.setFont("helvetica","normal");
+        doc.setFontSize(10);
+        doc.setTextColor(13,43,69);
+        doc.text(label, m, y);
+        doc.setTextColor(80,100,115);
+        doc.text(`${val}/25`, W-m-16, y);
+        y+=4;
+        doc.setFillColor(220,230,235);
+        doc.roundedRect(m,y,W-m*2,4,1,1,"F");
+        doc.setFillColor(...clr);
+        doc.roundedRect(m,y,(W-m*2)*(val/25),4,1,1,"F");
+        y+=9;
+      };
+      drawBar("Compassion Satisfaction", scores.cs,  [34,121,160]);
+      drawBar("Burnout",                  scores.bo,  [160,96,48]);
+      drawBar("Secondary Traumatic Stress", scores.sts,[122,80,144]);
+      y+=4;
+
+      if(result.crisis){
+        doc.setDrawColor(155,32,32);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(m,y,W-m*2,48,2,2,"S");
+        doc.setFont("helvetica","bold");
+        doc.setFontSize(9);
+        doc.setTextColor(155,32,32);
+        doc.text("SUPPORT RESOURCES — PLEASE REACH OUT", m+4, y+7);
+        doc.setFont("helvetica","normal");
+        doc.setFontSize(9);
+        doc.setTextColor(13,43,69);
+        ["988 Suicide & Crisis Lifeline: Call or text 988","Crisis Text Line: Text HOME to 741741","SAMHSA Helpline: 1-800-662-4357","Employee Assistance Program (EAP): Contact your HR office"].forEach((r,i)=>{ doc.text(r,m+4,y+15+(i*8)); });
+        y+=56;
+      }
+
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(9);
+      doc.setTextColor(13,43,69);
+      doc.text("WHAT THIS MEANS", m, y); y+=5;
+      doc.setFillColor(200,155,60);
+      doc.rect(m,y,30,0.4,"F"); y+=6;
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(10);
+      const genLines = doc.splitTextToSize(result.general, W-m*2);
+      doc.text(genLines, m, y); y+=genLines.length*5+6;
+
+      const profMsg = result.profMsg[profession]||result.general;
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(9);
+      doc.setTextColor(13,43,69);
+      doc.text(`FOR ${profName.toUpperCase()}`, m, y); y+=5;
+      doc.setFillColor(200,155,60);
+      doc.rect(m,y,30,0.4,"F"); y+=6;
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(10);
+      const profLines = doc.splitTextToSize(profMsg, W-m*2);
+      doc.text(profLines, m, y); y+=profLines.length*5+8;
+
+      if(!result.crisis){
+        doc.setDrawColor(26,92,122);
+        doc.setLineWidth(0.3);
+        doc.roundedRect(m,y,W-m*2,20,2,2,"S");
+        doc.setFont("helvetica","italic");
+        doc.setFontSize(10);
+        doc.setTextColor(13,43,69);
+        const ctaLines = doc.splitTextToSize(result.cta, W-m*2-8);
+        doc.text(ctaLines, m+4, y+7);
+        doc.setFont("helvetica","bold");
+        doc.setTextColor(26,92,122);
+        doc.text("fidescope.com", W/2, y+17, {align:"center"});
+        y+=28;
+      }
+
+      doc.setFillColor(13,43,69);
+      doc.rect(0,280,W,17,"F");
+      doc.setFont("helvetica","normal");
+      doc.setFontSize(7);
+      doc.setTextColor(200,200,200);
+      doc.text("The FWI\u2122 is grounded in the ProQOL framework (Stamm, 2010). For reflective use only. Not a clinical instrument.", W/2, 286, {align:"center"});
+      doc.setTextColor(200,155,60);
+      doc.setFont("helvetica","bold");
+      doc.setFontSize(8);
+      doc.text("fidescope.com  \u00a9 Fidescope Consulting Group. FWI\u2122 is a trademark.", W/2, 293, {align:"center"});
+
+      doc.save(`FWI-Results-${userData.firstName}-${userData.lastName}.pdf`);
+    }
+
+    // ─── Share text ───────────────────────────────────────────────────────────
+    function buildShareText(userData, scores, quadrant, profession) {
+      const result = RESULTS[quadrant];
+      const profName = PROFESSIONS.find(p=>p.id===profession)?.label||"Professional";
+      return `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FIDESCOPE WELLNESS INDEX — FWI™
+My Professional Wellness Results
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+${result.icon} ${result.label.toUpperCase()}
+"${result.tagline}"
+
+Assessed as: ${profName}
+
+Scores (out of 25):
+  Compassion Satisfaction ......... ${scores.cs}/25
+  Burnout ......................... ${scores.bo}/25
+  Secondary Traumatic Stress ...... ${scores.sts}/25
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Take the FWI™ at: https://fidescope.com/fwi
+© Fidescope Consulting Group`;
+    }
+
+    // ─── Mini bar chart (no library needed) ──────────────────────────────────
+    function MiniBarChart({ data, height=160 }) {
+      const max = Math.max(...data.map(d=>d.value), 1);
+      return (
+        <div style={{ display:"flex", alignItems:"flex-end", gap:"8px", height:`${height}px`, padding:"8px 0 0" }}>
+          {data.map((d,i) => (
+            <div key={i} style={{ flex:1, display:"flex", flexDirection:"column", alignItems:"center", gap:"6px", height:"100%" }}>
+              <div style={{ fontFamily:"'Jost',sans-serif", fontSize:"12px", color:C.cream, fontWeight:600 }}>{d.value}</div>
+              <div style={{ flex:1, width:"100%", display:"flex", alignItems:"flex-end" }}>
+                <div style={{ width:"100%", height:`${Math.max((d.value/max)*100,4)}%`, background:d.fill||C.teal, borderRadius:"4px 4px 0 0", transition:"height 0.6s ease", boxShadow:`0 0 10px ${d.fill||C.teal}44` }}/>
+              </div>
+              <div style={{ fontFamily:"'Jost',sans-serif", fontSize:"10px", color:"rgba(248,244,238,0.45)", textAlign:"center", lineHeight:1.3, paddingBottom:"4px" }}>{d.name}</div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    function HorizBarChart({ data }) {
+      const max = Math.max(...data.map(d=>d.value), 1);
+      return (
+        <div style={{ display:"flex", flexDirection:"column", gap:"12px", padding:"4px 0" }}>
+          {data.map((d,i) => (
+            <div key={i} style={{ display:"flex", alignItems:"center", gap:"12px" }}>
+              <div style={{ fontFamily:"'Jost',sans-serif", fontSize:"12px", color:"rgba(248,244,238,0.6)", width:"130px", flexShrink:0, textAlign:"right" }}>{d.name}</div>
+              <div style={{ flex:1, height:"12px", background:"rgba(255,255,255,0.06)", borderRadius:"6px", overflow:"hidden" }}>
+                <div style={{ height:"100%", width:`${(d.value/max)*100}%`, background:d.fill, borderRadius:"6px", transition:"width 0.8s ease" }}/>
+              </div>
+              <div style={{ fontFamily:"'Jost',sans-serif", fontSize:"13px", color:C.cream, fontWeight:600, width:"40px" }}>{d.value}<span style={{ color:"rgba(248,244,238,0.3)", fontSize:"10px" }}>/25</span></div>
+            </div>
+          ))}
+        </div>
+      );
+    }
+
+    // ─── Shared UI ────────────────────────────────────────────────────────────
+    function ScoreBar({ label, value, pct, color, invert }) {
+      const col = invert ? (pct>60?"#C04A4A":pct>40?"#C0784A":color) : color;
+      return (
+        <div>
+          <div style={{ display:"flex", justifyContent:"space-between", marginBottom:"6px" }}>
+            <span style={{ fontFamily:"'Jost',sans-serif", fontSize:"14px", color:C.cream, fontWeight:500 }}>{label}</span>
+            <span style={{ fontFamily:"'Jost',sans-serif", fontSize:"13px", color:C.muted }}>{value}<span style={{ color:"rgba(248,244,238,0.3)", fontSize:"11px" }}>/25</span></span>
+          </div>
+          <div style={{ height:"8px", background:"rgba(255,255,255,0.06)", borderRadius:"4px", overflow:"hidden" }}>
+            <div style={{ height:"100%", width:`${pct}%`, background:col, borderRadius:"4px", boxShadow:`0 0 12px ${col}55`, transition:"width 1s ease" }}/>
+          </div>
+        </div>
+      );
+    }
+
+    function QuestionCard({ question, index, value, onChange }) {
+      const [hov, setHov] = useState(null);
+      return (
+        <div style={{ ...S.card, borderColor:value?"rgba(200,155,60,0.25)":"rgba(248,244,238,0.1)" }}>
+          <p style={{ fontFamily:"'Cormorant Garamond',serif", fontSize:"18px", color:C.cream, lineHeight:1.65, marginBottom:"20px", fontWeight:500 }}>
+            <span style={{ color:C.gold, fontFamily:"'Jost',sans-serif", fontSize:"13px", fontWeight:600, marginRight:"10px" }}>{index}.</span>
+            {question.text}
+          </p>
+          <div style={{ display:"flex", gap:"6px", flexWrap:"wrap" }}>
+            {SCALE.map(s => (
+              <button key={s.value} onClick={()=>onChange(s.value)} onMouseEnter={()=>setHov(s.value)} onMouseLeave={()=>setHov(null)}
+                style={{ background:value===s.value?`linear-gradient(135deg,${C.gold},${C.goldLight})`:hov===s.value?"rgba(255,255,255,0.08)":"rgba(255,255,255,0.04)", border:value===s.value?"none":"1px solid rgba(248,244,238,0.15)", borderRadius:"6px", padding:"8px 6px", cursor:"pointer", flex:"1", minWidth:"52px", display:"flex", flexDirection:"column", alignItems:"center", gap:"3px", transition:"all 0.15s" }}>
+                <span style={{ fontFamily:"'Jost',sans-serif", fontWeight:700, fontSize:"16px", color:value===s.value?C.navy:C.cream }}>{s.value}</span>
+                <span style={{ fontFamily:"'Jost',sans-serif", fontSize:"10px", color:value===s.value?C.navyMid:"rgba(248,244,238,0.4)" }}>{s.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    function Field({ label, error, value, onChange, placeholder, type="text" }) {
+      const [focused, setFocused] = useState(false);
+      return (
+        <div>
+          <label style={{ ...S.ui, fontSize:"12px", color:"rgba(248,244,238,0.5)", display:"block", marginBottom:"6px", letterSpacing:"0.04em" }}>{label}</label>
+          <input type={type} value={value} placeholder={placeholder} onChange={e=>onChange(e.target.value)} onFocus={()=>setFocused(true)} onBlur={()=>setFocused(false)}
+            style={{ ...S.input, borderColor:error?"rgba(155,32,32,0.6)":focused?"rgba(200,155,60,0.5)":"rgba(248,244,238,0.2)" }}/>
+          {error && <div style={{ fontFamily:"'Jost',sans-serif", fontSize:"11px", color:"#E07070", marginTop:"4px" }}>{error}</div>}
+        </div>
+      );
+    }
+
+    // ─── SCREEN: Welcome ──────────────────────────────────────────────────────
+    function WelcomeScreen({ onStart, onAdmin }) {
+      return (
+        <div style={{ minHeight:"100vh", display:"flex", flexDirection:"column", alignItems:"center", justifyContent:"center", padding:"40px 24px", position:"relative", overflow:"hidden" }}>
+          <div style={{ position:"absolute", inset:0, background:`radial-gradient(ellipse 70% 55% at 50% 25%, ${C.navyLight} 0%, ${C.navy} 100%)`, zIndex:0 }}/>
+          <div style={{ position:"absolute", top:"-80px", right:"-80px", width:"400px", height:"400px", border:"1px solid rgba(200,155,60,0.07)", borderRadius:"50%", zIndex:0 }}/>
+          <div style={{ position:"absolute", top:"-40px", right:"-40px", width:"280px", height:"280px", border:"1px solid rgba(200,155,60,0.1)", borderRadius:"50%", zIndex:0 }}/>
+          <div style={{ position:"absolute", bottom:"-60px", left:"-60px", width:"360px", height:"360px", border:"1px solid rgba(26,92,122,0.1)", borderRadius:"50%", zIndex:0 }}/>
+          <div style={{ position:"relative", zIndex:1, maxWidth:"680px", width:"100%", textAlign:"center" }}>
+            <div style={{ marginBottom:"44px" }}>
+              <div style={{ ...S.lbl, fontSize:"12px", color:C.goldLight, marginBottom:"10px" }}>FIDESCOPE CONSULTING GROUP</div>
+              <div style={{ width:"56px", height:"1px", background:`linear-gradient(90deg,transparent,${C.gold},transparent)`, margin:"0 auto" }}/>
+            </div>
+            <h1 style={{ fontFamily:"'Cinzel',serif", fontWeight:700, fontSize:"clamp(28px,6vw,50px)", color:C.cream, letterSpacing:"0.04em", lineHeight:1.15, marginBottom:"14px" }}>
+              Fidescope Wellness Index
+            </h1>
+            <div style={{ ...S.lbl, marginBottom:"28px" }}>FWI™ — Professional Edition</div>
+            <p style={{ ...S.body, color:C.muted, marginBottom:"12px", fontSize:"19px" }}>
+              A compassion fatigue and burnout self-assessment for professionals in high-stakes helping fields.
+            </p>
+            <p style={{ ...S.ui, color:"rgba(248,244,238,0.4)", marginBottom:"48px", fontSize:"13px" }}>
+              Grounded in the ProQOL framework · 15 questions · 5–8 minutes · Completely private
+            </p>
+            <div style={{ display:"flex", flexDirection:"column", alignItems:"center", gap:"12px" }}>
+              <button onClick={onStart} style={{ ...S.btn, padding:"16px 52px", fontSize:"16px" }}>Begin Assessment</button>
+              <p style={{ ...S.ui, color:"rgba(248,244,238,0.3)", fontSize:"12px", margin:0 }}>Your responses are not stored or shared without your consent.</p>
+            </div>
+            <div style={{ marginTop:"60px", paddingTop:"28px", borderTop:"1px solid rgba(248,244,238,0.07)" }}>
+              <p style={{ ...S.ui, color:"rgba(248,244,238,0.28)", fontSize:"12px", margin:"0 0 14px" }}>
+                The FWI™ is grounded in the Professional Quality of Life (ProQOL) framework by Dr. Beth Stamm.
+                This tool is for reflective purposes only and does not constitute clinical assessment or diagnosis.
+              </p>
+              <button onClick={onAdmin} style={{ background:"none", border:"none", cursor:"pointer", color:"rgba(248,244,238,0.18)", fontFamily:"'Jost',sans-serif", fontSize:"11px", letterSpacing:"0.1em", textTransform:"uppercase" }}>
+                Admin Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── SCREEN: Profession ───────────────────────────────────────────────────
+    function ProfessionScreen({ onSelect, onBack }) {
+      const [hov, setHov] = useState(null);
+      return (
+        <div style={{ minHeight:"100vh", padding:"40px 24px" }}>
+          <div style={{ maxWidth:"720px", margin:"0 auto" }}>
+            <button onClick={onBack} style={{ ...S.btnGhost, fontSize:"12px", padding:"8px 18px", marginBottom:"32px" }}>← Back</button>
+            <div style={{ textAlign:"center", marginBottom:"44px" }}>
+              <div style={{ ...S.lbl, marginBottom:"14px" }}>Step 1 of 4 — Select Your Profession</div>
+              <h1 style={{ fontFamily:"'Cinzel',serif", fontWeight:700, fontSize:"clamp(22px,4vw,36px)", color:C.cream, marginBottom:"12px", letterSpacing:"0.03em" }}>Who are you in this work?</h1>
+              <p style={{ ...S.body, color:C.muted, fontSize:"17px" }}>Your responses will be interpreted through the lens of your specific professional context.</p>
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:"12px" }}>
+              {PROFESSIONS.map(p => (
+                <button key={p.id} onClick={()=>onSelect(p.id)} onMouseEnter={()=>setHov(p.id)} onMouseLeave={()=>setHov(null)}
+                  style={{ background:hov===p.id?"rgba(200,155,60,0.09)":"rgba(255,255,255,0.04)", border:hov===p.id?"1px solid rgba(200,155,60,0.4)":"1px solid rgba(248,244,238,0.1)", borderRadius:"8px", padding:"20px 24px", cursor:"pointer", textAlign:"left", display:"flex", alignItems:"center", justifyContent:"space-between", gap:"16px", transition:"all 0.2s" }}>
+                  <div>
+                    <div style={{ fontFamily:"'Jost',sans-serif", fontWeight:600, fontSize:"16px", color:hov===p.id?C.goldLight:C.cream, marginBottom:"4px", transition:"color 0.2s" }}>{p.label}</div>
+                    <div style={{ fontFamily:"'Jost',sans-serif", fontSize:"13px", color:"rgba(248,244,238,0.4)" }}>{p.sub}</div>
+                  </div>
+                  <div style={{ color:hov===p.id?C.gold:"rgba(248,244,238,0.2)", fontSize:"20px", flexShrink:0 }}>→</div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── SCREEN: Assessment ───────────────────────────────────────────────────
+    function AssessmentScreen({ answers, onAnswer, onNext, onBack, sectionIdx }) {
+      const section = SECTIONS[sectionIdx];
+      const sectionQs = QUESTIONS.filter(q=>q.section===section.id);
+      const allDone = sectionQs.every(q=>answers[q.id]);
+      const totalDone = Object.keys(answers).length;
+      return (
+        <div style={{ minHeight:"100vh", padding:"32px 24px 64px" }}>
+          <div style={{ maxWidth:"720px", margin:"0 auto 36px", display:"flex", alignItems:"center", gap:"14px" }}>
+            {SECTIONS.map((sec,i) => (
+              <div key={sec.id} style={{ flex:1, height:"3px", borderRadius:"2px", background:i<sectionIdx?"rgba(200,155,60,0.5)":i===sectionIdx?`linear-gradient(90deg,${C.teal},${C.gold})`:"rgba(248,244,238,0.1)" }}/>
+            ))}
+            <div style={{ ...S.ui, color:C.muted, fontSize:"12px", whiteSpace:"nowrap" }}>{totalDone}/15</div>
+          </div>
+          <div style={{ maxWidth:"720px", margin:"0 auto" }}>
+            <div style={{ marginBottom:"36px" }}>
+              <div style={{ ...S.lbl, marginBottom:"10px" }}>{section.label} · {section.title}</div>
+              <div style={{ width:"36px", height:"2px", background:C.gold, marginBottom:"18px", opacity:0.7 }}/>
+              <p style={{ ...S.body, color:C.muted, fontSize:"17px", margin:0 }}>{section.intro}</p>
+            </div>
+            <div style={{ display:"flex", gap:"6px", marginBottom:"28px", flexWrap:"wrap" }}>
+              {SCALE.map(s => (
+                <div key={s.value} style={{ ...S.ui, fontSize:"12px", color:"rgba(248,244,238,0.38)", background:"rgba(255,255,255,0.04)", border:"1px solid rgba(248,244,238,0.07)", borderRadius:"4px", padding:"4px 10px" }}>
+                  {s.value} = {s.label}
+                </div>
+              ))}
+            </div>
+            <div style={{ display:"flex", flexDirection:"column", gap:"20px", marginBottom:"36px" }}>
+              {sectionQs.map((q,qi) => (
+                <QuestionCard key={q.id} question={q} index={qi+1} value={answers[q.id]} onChange={v=>onAnswer(q.id,v)}/>
+              ))}
+            </div>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", flexWrap:"wrap", gap:"12px" }}>
+              <button onClick={onBack} style={{ ...S.btnGhost, fontSize:"13px", padding:"10px 20px" }}>← Back</button>
+              <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:"6px" }}>
+                {!allDone && <p style={{ ...S.ui, color:"rgba(248,244,238,0.35)", fontSize:"12px", margin:0 }}>Please answer all {sectionQs.length} questions to continue.</p>}
+                <button onClick={onNext} disabled={!allDone} style={{ ...S.btn, opacity:allDone?1:0.35, cursor:allDone?"pointer":"not-allowed" }}>
+                  {sectionIdx<2 ? "Continue →" : "Continue to Results →"}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── SCREEN: Email Gate ───────────────────────────────────────────────────
+    function EmailGateScreen({ scores, quadrant, profession, onSubmit, onSkip }) {
+      const [form, setForm] = useState({ firstName:"", lastName:"", email:"", organization:"" });
+      const [errors, setErrors] = useState({});
+      const [submitting, setSubmitting] = useState(false);
+      const result = RESULTS[quadrant];
+
+      function validate() {
+        const e = {};
+        if(!form.firstName.trim()) e.firstName="Required";
+        if(!form.lastName.trim())  e.lastName="Required";
+        if(!form.email.trim()||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) e.email="Valid email required";
+        return e;
+      }
+
+      function handleSubmit() {
+        const e = validate();
+        if(Object.keys(e).length){ setErrors(e); return; }
+        setSubmitting(true);
+        saveSubmission({ ...form, profession, scores, quadrant, timestamp:Date.now() });
+        setSubmitting(false);
+        onSubmit(form);
+      }
+
+      return (
+        <div style={{ minHeight:"100vh", padding:"40px 24px", display:"flex", alignItems:"center", justifyContent:"center" }}>
+          <div style={{ maxWidth:"560px", width:"100%" }}>
+            <div style={{ textAlign:"center", marginBottom:"40px" }}>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:"10px", background:result.badge, border:`1px solid ${result.border}`, borderRadius:"40px", padding:"8px 20px", marginBottom:"20px" }}>
+                <span style={{ fontSize:"16px", color:result.color }}>{result.icon}</span>
+                <span style={{ fontFamily:"'Cinzel',serif", fontWeight:600, fontSize:"16px", color:result.color }}>{result.label}</span>
+              </div>
+              <h2 style={{ fontFamily:"'Cormorant Garamond',serif", fontStyle:"italic", fontSize:"clamp(20px,4vw,28px)", color:C.cream, marginBottom:"10px" }}>Your results are ready.</h2>
+              <p style={{ ...S.body, color:C.muted, fontSize:"16px" }}>Enter your details to view your full interpretation and save your results.</p>
+            </div>
+            <div style={{ ...S.card, marginBottom:"16px" }}>
+              <div style={{ ...S.lbl, marginBottom:"20px" }}>Your Information</div>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"14px", marginBottom:"14px" }}>
+                <Field label="First Name *" error={errors.firstName} value={form.firstName} onChange={v=>setForm(p=>({...p,firstName:v}))} placeholder="First name"/>
+                <Field label="Last Name *"  error={errors.lastName}  value={form.lastName}  onChange={v=>setForm(p=>({...p,lastName:v}))}  placeholder="Last name"/>
+              </div>
+              <div style={{ marginBottom:"14px" }}>
+                <Field label="Work Email *" error={errors.email} value={form.email} onChange={v=>setForm(p=>({...p,email:v}))} placeholder="your@email.com" type="email"/>
+              </div>
+              <Field label="Organization (optional)" value={form.organization} onChange={v=>setForm(p=>({...p,organization:v}))} placeholder="Agency or employer name"/>
+            </div>
+            <p style={{ ...S.ui, color:"rgba(248,244,238,0.3)", fontSize:"12px", marginBottom:"16px", lineHeight:1.6 }}>
+              By submitting, you consent to Fidescope Consulting Group storing your results for reporting and follow-up purposes. Your information is never sold or shared with third parties.
+            </p>
+            <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
+              <button onClick={handleSubmit} disabled={submitting} style={{ ...S.btn, width:"100%", padding:"15px" }}>
+                {submitting ? "Saving..." : "View My Results →"}
+              </button>
+              <button onClick={onSkip} style={{ ...S.btnGhost, width:"100%", fontSize:"12px", padding:"10px" }}>
+                Skip — View without saving
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── SCREEN: Results ──────────────────────────────────────────────────────
+    function ResultsScreen({ userData, scores, quadrant, profession, onRetake }) {
+      const [copied, setCopied] = useState(false);
+      const result = RESULTS[quadrant];
+      const profName = PROFESSIONS.find(p=>p.id===profession)?.label||"Professional";
+      const profMsg = result.profMsg[profession]||result.general;
+      const csP  = Math.round((scores.cs /25)*100);
+      const boP  = Math.round((scores.bo /25)*100);
+      const stsP = Math.round((scores.sts/25)*100);
+
+      function handleShare() {
+        const text = buildShareText(userData||{firstName:"",lastName:""}, scores, quadrant, profession);
+        if(navigator.clipboard){ navigator.clipboard.writeText(text).then(()=>{ setCopied(true); setTimeout(()=>setCopied(false),2500); }); }
+        else {
+          const ta = document.createElement("textarea");
+          ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand("copy");
+          document.body.removeChild(ta); setCopied(true); setTimeout(()=>setCopied(false),2500);
+        }
+      }
+
+      return (
+        <div style={{ minHeight:"100vh", padding:"40px 24px 80px" }}>
+          <div style={{ maxWidth:"720px", margin:"0 auto" }}>
+            <div style={{ textAlign:"center", marginBottom:"44px" }}>
+              <div style={{ ...S.lbl, marginBottom:"14px" }}>Your FWI™ Results</div>
+              <div style={{ display:"inline-flex", alignItems:"center", gap:"12px", background:result.badge, border:`1px solid ${result.border}`, borderRadius:"40px", padding:"10px 24px", marginBottom:"18px" }}>
+                <span style={{ fontSize:"18px", color:result.color }}>{result.icon}</span>
+                <span style={{ fontFamily:"'Cinzel',serif", fontWeight:600, fontSize:"18px", color:result.color, letterSpacing:"0.06em" }}>{result.label}</span>
+              </div>
+              <h2 style={{ fontFamily:"'Cormorant Garamond',serif", fontStyle:"italic", fontWeight:500, fontSize:"clamp(20px,4vw,30px)", color:C.cream, marginBottom:"8px", lineHeight:1.3 }}>{result.tagline}</h2>
+              {userData && <div style={{ ...S.ui, color:"rgba(248,244,238,0.45)", fontSize:"13px" }}>{userData.firstName} {userData.lastName} · {profName}</div>}
+            </div>
+
+            <div style={{ display:"flex", gap:"10px", marginBottom:"28px", flexWrap:"wrap" }}>
+              <button onClick={()=>generatePDF(userData||{firstName:"Anonymous",lastName:"User",email:"",organization:""}, scores, quadrant, profession)} style={{ ...S.btn, flex:1, padding:"12px 16px", fontSize:"13px" }}>
+                ⬇ Download PDF
+              </button>
+              <button onClick={handleShare} style={{ ...S.btnTeal, flex:1, padding:"12px 16px", fontSize:"13px" }}>
+                {copied ? "✓ Copied!" : "⎋ Copy Share Card"}
+              </button>
+            </div>
+
+            <div style={{ ...S.card, marginBottom:"24px" }}>
+              <div style={{ ...S.lbl, marginBottom:"18px" }}>Subscale Scores</div>
+              <div style={{ display:"flex", flexDirection:"column", gap:"16px" }}>
+                <ScoreBar label="Compassion Satisfaction"   value={scores.cs}  pct={csP}  color={C.tealLight} invert={false}/>
+                <ScoreBar label="Burnout"                    value={scores.bo}  pct={boP}  color="#A06030"     invert={true}/>
+                <ScoreBar label="Secondary Traumatic Stress" value={scores.sts} pct={stsP} color="#7A5090"     invert={true}/>
+              </div>
+              <p style={{ ...S.ui, color:"rgba(248,244,238,0.28)", fontSize:"12px", marginTop:"14px", marginBottom:0 }}>
+                Each subscale scored 5–25. For Compassion Satisfaction, higher is better. For Burnout and Secondary Traumatic Stress, lower is better.
+              </p>
+            </div>
+
+            {result.crisis && (
+              <div style={{ background:"rgba(155,32,32,0.12)", border:"1px solid rgba(155,32,32,0.4)", borderRadius:"8px", padding:"28px", marginBottom:"24px" }}>
+                <div style={{ ...S.lbl, color:"#E07070", marginBottom:"12px" }}>Support Resources — Please Reach Out</div>
+                <p style={{ ...S.body, color:C.cream, fontSize:"17px", marginBottom:"20px", lineHeight:1.7 }}>If you are in crisis or experiencing thoughts of self-harm, please reach out now:</p>
+                <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
+                  {[
+                    { name:"988 Suicide & Crisis Lifeline", detail:"Call or text 988 · Available 24/7" },
+                    { name:"Crisis Text Line",              detail:"Text HOME to 741741" },
+                    { name:"SAMHSA Helpline",               detail:"1-800-662-4357 · Mental health & substance use support" },
+                    { name:"Employee Assistance Program (EAP)", detail:"Contact your agency's HR or benefits office" },
+                  ].map(r => (
+                    <div key={r.name} style={{ background:"rgba(0,0,0,0.2)", borderRadius:"6px", padding:"14px 18px" }}>
+                      <div style={{ fontFamily:"'Jost',sans-serif", fontWeight:600, color:C.cream, fontSize:"15px" }}>{r.name}</div>
+                      <div style={{ fontFamily:"'Jost',sans-serif", color:"rgba(248,244,238,0.5)", fontSize:"13px", marginTop:"2px" }}>{r.detail}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div style={{ ...S.card, marginBottom:"20px" }}>
+              <div style={{ ...S.lbl, marginBottom:"14px" }}>What This Means</div>
+              <p style={{ ...S.body, color:C.cream, fontSize:"18px", lineHeight:1.75, margin:0 }}>{result.general}</p>
+            </div>
+
+            <div style={{ ...S.card, marginBottom:"24px", borderColor:result.border, background:result.badge }}>
+              <div style={{ ...S.lbl, marginBottom:"14px", color:result.color }}>For {profName}s</div>
+              <p style={{ ...S.body, color:C.cream, fontSize:"18px", lineHeight:1.75, margin:0 }}>{profMsg}</p>
+            </div>
+
+            {!result.crisis && (
+              <div style={{ background:"linear-gradient(135deg,rgba(26,92,122,0.22),rgba(26,92,122,0.08))", border:"1px solid rgba(26,92,122,0.3)", borderRadius:"8px", padding:"28px", marginBottom:"24px", textAlign:"center" }}>
+                <div style={{ ...S.lbl, marginBottom:"12px" }}>Next Step</div>
+                <p style={{ ...S.body, color:C.muted, fontSize:"17px", lineHeight:1.7, marginBottom:"24px" }}>{result.cta}</p>
+                <a href="https://fidescope.com" target="_blank" rel="noopener noreferrer" style={{ ...S.btn, textDecoration:"none", display:"inline-block" }}>Connect with Fidescope</a>
+              </div>
+            )}
+            {result.crisis && (
+              <div style={{ ...S.card, marginBottom:"24px", textAlign:"center" }}>
+                <p style={{ ...S.body, color:C.muted, fontSize:"17px", marginBottom:"20px" }}>When you are ready, Fidescope is here. This work does not have to end here — and neither does your story in it.</p>
+                <a href="https://fidescope.com" target="_blank" rel="noopener noreferrer" style={{ ...S.btnGhost, textDecoration:"none", display:"inline-block" }}>Reach Out to Fidescope</a>
+              </div>
+            )}
+
+            <div style={{ borderTop:"1px solid rgba(248,244,238,0.07)", paddingTop:"20px", marginBottom:"20px" }}>
+              <p style={{ ...S.ui, color:"rgba(248,244,238,0.25)", fontSize:"12px", lineHeight:1.7, margin:0 }}>
+                The Fidescope Wellness Index (FWI™) is a reflective self-assessment tool grounded in the ProQOL framework (Stamm, 2010). It is not a clinical instrument and does not constitute a mental health diagnosis or treatment. If you are in a mental health crisis, please contact a licensed professional or crisis resource immediately. © Fidescope Consulting Group. FWI™ is a trademark of Fidescope Consulting Group.
+              </p>
+            </div>
+            <div style={{ textAlign:"center" }}>
+              <button onClick={onRetake} style={{ ...S.btnGhost, fontSize:"13px", padding:"10px 24px" }}>↺ Retake Assessment</button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // ─── SCREEN: Admin ────────────────────────────────────────────────────────
+    const ADMIN_PASS = "fidescope2024";
+    const Q_COLORS = { thriving:"#1A7A4A", at_risk:"#C89B3C", languishing:"#7A8A9A", crisis:"#9B2020" };
+
+    function AdminDashboard({ onBack }) {
+      const [pwInput, setPwInput] = useState("");
+      const [authed, setAuthed] = useState(false);
+      const [pwError, setPwError] = useState(false);
+      const [subs, setSubs] = useState([]);
+      const [confirmClear, setConfirmClear] = useState(false);
+
+      function login() {
+        if(pwInput===ADMIN_PASS){ setAuthed(true); setSubs(loadSubmissions()); }
+        else{ setPwError(true); setTimeout(()=>setPwError(false),1800); }
+      }
+
+      function handleClear() { clearSubmissions(); setSubs([]); setConfirmClear(false); }
+
+      const total = subs.length;
+      const quadrantData = Object.keys(RESULTS).map(q=>({ name:RESULTS[q].label, value:subs.filter(s=>s.quadrant===q).length, fill:Q_COLORS[q] }));
+      const profData = PROFESSIONS.map((p,i)=>({ name:p.label.split("/")[0].trim().split(" ").slice(0,2).join(" "), value:subs.filter(s=>s.profession===p.id).length, fill:["#2279A0","#1A7A4A","#C89B3C","#9B2020","#7A5090"][i] }));
+      const avgCS  = total ? (subs.reduce((s,x)=>s+x.scores.cs,0)/total).toFixed(1)  : 0;
+      const avgBO  = total ? (subs.reduce((s,x)=>s+x.scores.bo,0)/total).toFixed(1)  : 0;
+      const avgSTS = total ? (subs.reduce((s,x)=>s+x.scores.sts,0)/total).toFixed(1) : 0;
+      const avgData = [
+        { name:"Compassion Satisfaction", value:parseFloat(avgCS),  fill:"#2279A0" },
+        { name:"Burnout",                 value:parseFloat(avgBO),  fill:"#A06030" },
+        { name:"Sec. Traumatic Stress",   value:parseFloat(avgSTS), fill:"#7A5090" },
+      ];
+
+      if(!authed) return (
+        <div style={{ minHeight:"100vh", display:"flex", alignItems:"center", justifyContent:"center", padding:"40px 24px" }}>
+          <div style={{ maxWidth:"380px", width:"100%", textAlign:"center" }}>
+            <button onClick={onBack} style={{ ...S.btnGhost, fontSize:"12px", padding:"8px 18px", marginBottom:"36px" }}>← Back</button>
+            <div style={{ ...S.lbl, marginBottom:"16px" }}>Admin Access</div>
+            <h2 style={{ fontFamily:"'Cinzel',serif", fontSize:"24px", color:C.cream, marginBottom:"8px" }}>Dashboard</h2>
+            <p style={{ ...S.ui, color:C.muted, marginBottom:"28px" }}>Enter the admin password to access submission data.</p>
+            <input type="password" value={pwInput} placeholder="Password" onChange={e=>setPwInput(e.target.value)} onKeyDown={e=>e.key==="Enter"&&login()}
+              style={{ ...S.input, marginBottom:"12px", textAlign:"center", borderColor:pwError?"rgba(155,32,32,0.6)":"rgba(248,244,238,0.2)" }}/>
+            {pwError && <p style={{ ...S.ui, color:"#E07070", fontSize:"13px", marginBottom:"12px" }}>Incorrect password</p>}
+            <button onClick={login} style={{ ...S.btn, width:"100%" }}>Enter Dashboard</button>
+          </div>
+        </div>
+      );
+
+      return (
+        <div style={{ minHeight:"100vh", padding:"32px 24px 64px" }}>
+          <div style={{ maxWidth:"900px", margin:"0 auto" }}>
+            <div style={{ display:"flex", justifyContent:"space-between", alignItems:"center", marginBottom:"36px", flexWrap:"wrap", gap:"12px" }}>
+              <div>
+                <div style={{ ...S.lbl, marginBottom:"8px" }}>Fidescope Consulting Group</div>
+                <h1 style={{ fontFamily:"'Cinzel',serif", fontSize:"clamp(20px,4vw,28px)", color:C.cream, margin:0 }}>FWI™ Admin Dashboard</h1>
+              </div>
+              <div style={{ display:"flex", gap:"10px", alignItems:"center", flexWrap:"wrap" }}>
+                {!confirmClear
+                  ? <button onClick={()=>setConfirmClear(true)} style={{ ...S.btnGhost, fontSize:"12px", padding:"8px 16px", color:"rgba(248,244,238,0.35)" }}>Clear All Data</button>
+                  : <>
+                      <span style={{ ...S.ui, color:"#E07070", fontSize:"13px" }}>Are you sure?</span>
+                      <button onClick={handleClear} style={{ ...S.btn, background:C.danger, padding:"8px 16px", fontSize:"12px" }}>Yes, Delete All</button>
+                      <button onClick={()=>setConfirmClear(false)} style={{ ...S.btnGhost, fontSize:"12px", padding:"8px 16px" }}>Cancel</button>
+                    </>
+                }
+                <button onClick={onBack} style={{ ...S.btnGhost, fontSize:"12px", padding:"8px 18px" }}>← Back</button>
+              </div>
+            </div>
+
+            {total===0 ? (
+              <div style={{ ...S.card, textAlign:"center", padding:"60px" }}>
+                <div style={{ ...S.lbl, marginBottom:"12px" }}>No Submissions Yet</div>
+                <p style={{ ...S.body, color:C.muted, fontSize:"17px" }}>Submissions will appear here once users complete the assessment and provide their information.</p>
+                <p style={{ ...S.ui, color:"rgba(248,244,238,0.3)", fontSize:"12px", marginTop:"16px" }}>Note: The admin dashboard stores data in this browser. For cross-device reporting, activate Formspree on your contact form and view responses there.</p>
+              </div>
+            ) : (
+              <>
+                {/* KPI row */}
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(140px,1fr))", gap:"14px", marginBottom:"28px" }}>
+                  {[
+                    { label:"Total Submissions", value:total,           color:C.goldLight },
+                    { label:"Avg. CS Score",     value:`${avgCS}/25`,  color:C.tealLight },
+                    { label:"Avg. BO Score",     value:`${avgBO}/25`,  color:"#C07040" },
+                    { label:"Avg. STS Score",    value:`${avgSTS}/25`, color:"#9A70B0" },
+                  ].map(k=>(
+                    <div key={k.label} style={{ ...S.card, textAlign:"center", padding:"20px 16px" }}>
+                      <div style={{ fontFamily:"'Cinzel',serif", fontSize:"clamp(18px,3vw,24px)", color:k.color, fontWeight:700, marginBottom:"6px" }}>{k.value}</div>
+                      <div style={{ ...S.ui, color:C.muted, fontSize:"12px" }}>{k.label}</div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Charts */}
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(280px,1fr))", gap:"20px", marginBottom:"28px" }}>
+                  <div style={{ ...S.card }}>
+                    <div style={{ ...S.lbl, marginBottom:"12px" }}>By Quadrant</div>
+                    <MiniBarChart data={quadrantData} height={160}/>
+                  </div>
+                  <div style={{ ...S.card }}>
+                    <div style={{ ...S.lbl, marginBottom:"12px" }}>By Profession</div>
+                    <MiniBarChart data={profData} height={160}/>
+                  </div>
+                </div>
+
+                <div style={{ ...S.card, marginBottom:"28px" }}>
+                  <div style={{ ...S.lbl, marginBottom:"16px" }}>Average Scores by Subscale</div>
+                  <HorizBarChart data={avgData}/>
+                </div>
+
+                {/* Table */}
+                <div style={{ ...S.card }}>
+                  <div style={{ ...S.lbl, marginBottom:"16px" }}>All Submissions ({total})</div>
+                  <div style={{ overflowX:"auto" }}>
+                    <table style={{ width:"100%", borderCollapse:"collapse", minWidth:"700px" }}>
+                      <thead>
+                        <tr>
+                          {["Name","Email","Organization","Profession","Quadrant","CS","BO","STS","Date"].map(h=>(
+                            <th key={h} style={{ ...S.ui, fontSize:"11px", color:"rgba(248,244,238,0.4)", textAlign:"left", padding:"8px 10px", borderBottom:"1px solid rgba(248,244,238,0.08)", whiteSpace:"nowrap", letterSpacing:"0.06em" }}>{h}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {subs.map((s,i) => {
+                          const res = RESULTS[s.quadrant];
+                          const profLabel = PROFESSIONS.find(p=>p.id===s.profession)?.label?.split("/")[0]?.split(" ").slice(0,2).join(" ")||s.profession;
+                          return (
+                            <tr key={i} style={{ borderBottom:"1px solid rgba(248,244,238,0.05)" }}>
+                              <td style={{ ...S.ui, fontSize:"13px", color:C.cream, padding:"10px" }}>{s.firstName} {s.lastName}</td>
+                              <td style={{ ...S.ui, fontSize:"12px", color:C.muted, padding:"10px" }}>{s.email}</td>
+                              <td style={{ ...S.ui, fontSize:"12px", color:C.muted, padding:"10px" }}>{s.organization||"—"}</td>
+                              <td style={{ ...S.ui, fontSize:"12px", color:C.muted, padding:"10px", whiteSpace:"nowrap" }}>{profLabel}</td>
+                              <td style={{ padding:"10px" }}>
+                                <span style={{ fontFamily:"'Jost',sans-serif", fontSize:"12px", fontWeight:600, color:res?.color||C.cream, background:res?.badge, border:`1px solid ${res?.border}`, borderRadius:"12px", padding:"3px 10px", whiteSpace:"nowrap" }}>
+                                  {res?.icon} {res?.label}
+                                </span>
+                              </td>
+                              <td style={{ ...S.ui, fontSize:"13px", color:C.tealLight, padding:"10px", fontWeight:600 }}>{s.scores?.cs}</td>
+                              <td style={{ ...S.ui, fontSize:"13px", color:"#C07040",    padding:"10px", fontWeight:600 }}>{s.scores?.bo}</td>
+                              <td style={{ ...S.ui, fontSize:"13px", color:"#9A70B0",    padding:"10px", fontWeight:600 }}>{s.scores?.sts}</td>
+                              <td style={{ ...S.ui, fontSize:"11px", color:"rgba(248,244,238,0.35)", padding:"10px", whiteSpace:"nowrap" }}>
+                                {new Date(s.timestamp).toLocaleDateString("en-US",{month:"short",day:"numeric",year:"numeric"})}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      );
+    }
+
+    // ─── App Shell ────────────────────────────────────────────────────────────
+    function App() {
+      const [step, setStep]         = useState("welcome");
+      const [profession, setProf]   = useState(null);
+      const [sectionIdx, setIdx]    = useState(0);
+      const [answers, setAnswers]   = useState({});
+      const [scores, setScores]     = useState(null);
+      const [quadrant, setQuad]     = useState(null);
+      const [userData, setUserData] = useState(null);
+      const topRef = useRef(null);
+
+      const scrollTop = () => window.scrollTo({ top:0, behavior:"smooth" });
+
+      function handleAnswer(qId, val) { setAnswers(prev=>({...prev,[qId]:val})); }
+
+      function handleSectionNext() {
+        if(sectionIdx<2){ setIdx(i=>i+1); scrollTop(); }
+        else {
+          const s = computeScores(answers);
+          setScores(s); setQuad(getQuadrant(s.cs,s.bo,s.sts));
+          setStep("emailgate"); scrollTop();
+        }
+      }
+
+      function handleSectionBack() {
+        if(sectionIdx>0){ setIdx(i=>i-1); scrollTop(); }
+        else{ setStep("profession"); scrollTop(); }
+      }
+
+      function handleRetake() {
+        setStep("welcome"); setProf(null); setIdx(0);
+        setAnswers({}); setScores(null); setQuad(null); setUserData(null);
+      }
+
+      return (
+        <div ref={topRef} style={{ background:C.navy, minHeight:"100vh", color:C.cream }}>
+          {step==="welcome"    && <WelcomeScreen onStart={()=>setStep("profession")} onAdmin={()=>setStep("admin")}/>}
+          {step==="profession" && <ProfessionScreen onSelect={p=>{setProf(p);setStep("assessment");scrollTop();}} onBack={()=>setStep("welcome")}/>}
+          {step==="assessment" && <AssessmentScreen answers={answers} onAnswer={handleAnswer} onNext={handleSectionNext} onBack={handleSectionBack} sectionIdx={sectionIdx}/>}
+          {step==="emailgate" && scores && quadrant && (
+            <EmailGateScreen scores={scores} quadrant={quadrant} profession={profession}
+              onSubmit={data=>{ setUserData(data); setStep("results"); scrollTop(); }}
+              onSkip={()=>{ setUserData(null); setStep("results"); scrollTop(); }}/>
+          )}
+          {step==="results" && scores && quadrant && (
+            <ResultsScreen userData={userData} scores={scores} quadrant={quadrant} profession={profession} onRetake={handleRetake}/>
+          )}
+          {step==="admin" && <AdminDashboard onBack={()=>setStep("welcome")}/>}
+        </div>
+      );
+    }
+
+    ReactDOM.createRoot(document.getElementById("root")).render(<App/>);
+  </script>
+</body>
+</html>
