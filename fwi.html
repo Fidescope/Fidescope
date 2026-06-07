@@ -45,6 +45,8 @@
       { id:"attorney",         label:"Attorney",                     sub:"Defense, prosecution, family law, civil rights practitioners" },
       { id:"judge",            label:"Judge / Judicial Officer",     sub:"Trial judges, magistrates, commissioners, hearing officers" },
       { id:"child_welfare",    label:"Child Welfare Professional",   sub:"CPS workers, foster care specialists, family support staff" },
+      { id:"law_enforcement",  label:"Law Enforcement & First Responders", sub:"Police, sheriff's deputies, corrections officers, EMS / paramedics & dispatch" },
+      { id:"clergy",           label:"Clergy / Faith Leader",        sub:"Pastors, priests, rabbis, imams, chaplains & ministry staff" },
     ];
 
     const SECTIONS = [
@@ -76,6 +78,28 @@
       { value:4, label:"Often" }, { value:5, label:"Very Often" },
     ];
 
+    // ─── Crisis Resources (profession-aware) ──────────────────────────────────
+    // 988 is always shown first; profession-specific lines next; universal lines last.
+    const RESOURCE_988 = { name:"988 Suicide & Crisis Lifeline", detail:"Call or text 988 · Available 24/7", pdf:"988 Suicide & Crisis Lifeline: Call or text 988" };
+    const BASE_RESOURCES_REST = [
+      { name:"Crisis Text Line",                  detail:"Text HOME to 741741", pdf:"Crisis Text Line: Text HOME to 741741" },
+      { name:"SAMHSA Helpline",                   detail:"1-800-662-4357 · Mental health & substance use support", pdf:"SAMHSA Helpline: 1-800-662-4357" },
+      { name:"Employee Assistance Program (EAP)", detail:"Contact your agency's HR or benefits office", pdf:"Employee Assistance Program (EAP): Contact your HR office" },
+    ];
+    const PROFESSION_RESOURCES = {
+      law_enforcement: [
+        { name:"CopLine — an Officer's Lifeline", detail:"1-800-267-5463 · 24/7 confidential, answered by retired law enforcement officers", pdf:"CopLine (law enforcement): 1-800-267-5463" },
+        { name:"Safe Call Now",                   detail:"1-206-459-3020 · Confidential 24/7 line for police, corrections, EMS & fire personnel and their families", pdf:"Safe Call Now (police, corrections, EMS, fire): 1-206-459-3020" },
+      ],
+      clergy: [
+        { name:"Your denomination or judicatory's clergy care office", detail:"Confidential pastoral support outside your own congregation", pdf:"Denomination / judicatory clergy care office (confidential)" },
+        { name:"A spiritual director, mentor, or clergy peer",          detail:"Trusted support outside your chain of accountability", pdf:"Spiritual director, mentor, or trusted clergy peer" },
+      ],
+    };
+    function resourcesFor(profession){
+      return [ RESOURCE_988, ...(PROFESSION_RESOURCES[profession]||[]), ...BASE_RESOURCES_REST ];
+    }
+
     // ─── Scoring ──────────────────────────────────────────────────────────────
     function computeScores(a) {
       return {
@@ -98,7 +122,7 @@
         label:"Thriving", tagline:"Your compassion is sustaining you.",
         color:C.success, badge:"rgba(26,122,74,0.15)", border:"rgba(26,122,74,0.4)", icon:"◆",
         general:"Your scores reflect a healthy balance of compassion satisfaction and manageable stress. You are doing genuinely difficult work — and still finding meaning in it. That is not common. It is worth protecting.",
-        profMsg:{ juvenile_justice:"Your resilience is a model for your agency. Consider becoming a voice for systemic wellness in your organization. The field needs people who have found what you have found.", educator:"The connection you feel to your students is your greatest professional asset. Keep protecting the practices, relationships, and boundaries that make that possible.", attorney:"Maintaining compassion satisfaction in legal work is a genuine achievement. What you model in how you treat your clients and yourself matters — for everyone around you.", judge:"Your sense of purpose in the judiciary is a stabilizing force. Consider how your position creates opportunities to support the wellness of your colleagues and court staff.", child_welfare:"The families you serve are fortunate to have someone still energized by this work. Keep investing in what sustains you — and share what you know." },
+        profMsg:{ juvenile_justice:"Your resilience is a model for your agency. Consider becoming a voice for systemic wellness in your organization. The field needs people who have found what you have found.", educator:"The connection you feel to your students is your greatest professional asset. Keep protecting the practices, relationships, and boundaries that make that possible.", attorney:"Maintaining compassion satisfaction in legal work is a genuine achievement. What you model in how you treat your clients and yourself matters — for everyone around you.", judge:"Your sense of purpose in the judiciary is a stabilizing force. Consider how your position creates opportunities to support the wellness of your colleagues and court staff.", child_welfare:"The families you serve are fortunate to have someone still energized by this work. Keep investing in what sustains you — and share what you know.", law_enforcement:"Sustaining compassion satisfaction in this work — amid shift work, scrutiny, and repeated exposure to people's worst days — is a real achievement, whether you carry a badge, work inside a facility, or ride the ambulance. Protect the routines, relationships, and decompression that make it possible, and consider being a steadying voice for wellness among the responders around you.", clergy:"Holding meaning and groundedness while carrying a congregation's joys and sorrows is a genuine grace — and not a given. Keep protecting your Sabbath, your own spiritual care, and the relationships that sustain you, and let your example give other faith leaders permission to tend to themselves." },
         cta:"Explore how Fidescope can help your agency build a culture that protects wellness for everyone on your team.",
         crisis:false,
       },
@@ -106,7 +130,7 @@
         label:"At Risk", tagline:"Your purpose is intact — but the strain is accumulating.",
         color:C.gold, badge:"rgba(200,155,60,0.15)", border:"rgba(200,155,60,0.45)", icon:"◈",
         general:"You still believe in this work — and that belief is meaningful. But conviction alone cannot sustain you through the level of stress you are experiencing. This is the window for intervention, not after burnout sets in.",
-        profMsg:{ juvenile_justice:"Juvenile justice professionals often push through warning signs because the work feels too urgent to pause. That dedication is understandable — and it is also a risk factor. The field needs you sustainable, not just willing.", educator:"You came into education with real purpose. What you are feeling now is not a sign that you chose wrongly — it is a signal that the system needs to do better by the people who carry it.", attorney:"The adversarial demands of legal work accumulate in ways that are easy to miss until they are not. Your scores suggest you are managing — but at cost. This is the right moment to intervene.", judge:"Judicial officers carry extraordinary moral weight with very little institutional support for wellbeing. What you are experiencing is the predictable cost of that responsibility.", child_welfare:"Child welfare work involves sustained exposure to family trauma with chronically insufficient resources. The toll is real, and the field underinvests in its people. You deserve better support." },
+        profMsg:{ juvenile_justice:"Juvenile justice professionals often push through warning signs because the work feels too urgent to pause. That dedication is understandable — and it is also a risk factor. The field needs you sustainable, not just willing.", educator:"You came into education with real purpose. What you are feeling now is not a sign that you chose wrongly — it is a signal that the system needs to do better by the people who carry it.", attorney:"The adversarial demands of legal work accumulate in ways that are easy to miss until they are not. Your scores suggest you are managing — but at cost. This is the right moment to intervene.", judge:"Judicial officers carry extraordinary moral weight with very little institutional support for wellbeing. What you are experiencing is the predictable cost of that responsibility.", child_welfare:"Child welfare work involves sustained exposure to family trauma with chronically insufficient resources. The toll is real, and the field underinvests in its people. You deserve better support.", law_enforcement:"First responders are trained to push through, and the culture often rewards it — which is exactly why the strain you are carrying can accumulate unnoticed. What your scores show is not weakness; it is the predictable cost of the work, on the street, inside a facility, or on the rig. This is the window to act, before it compounds.", clergy:"Faith leaders are expected to be endlessly available, and the calling itself can make the strain hard to admit — but conviction alone cannot carry the weight you are describing. What you are feeling is the predictable cost of pastoral life, not a failure of faith. This is the moment to set boundaries and seek support." },
         cta:"Fidescope's organizational wellness services are designed for agencies at exactly this inflection point. Let's talk.",
         crisis:false,
       },
@@ -114,7 +138,7 @@
         label:"Languishing", tagline:"Your light hasn't gone out — but it needs tending.",
         color:"#7A8A9A", badge:"rgba(122,138,154,0.15)", border:"rgba(122,138,154,0.4)", icon:"◇",
         general:"You may feel disconnected from the purpose that originally drew you to this work. That disconnection is not weakness or failure — it is a signal. Compassion fatigue is real, recognizable, and reversible with the right support.",
-        profMsg:{ juvenile_justice:"Research consistently shows that disconnection in juvenile justice professionals often precedes the field's most significant departures. You are worth retaining — and more importantly, you are worth supporting.", educator:"Many educators describe this state as going through the motions. You deserve more than that — and so do the students depending on you. Recovery starts with naming what is happening.", attorney:"Legal professionals rarely discuss languishing openly, yet the bar has among the highest burnout rates of any profession. You are not alone, and reaching out is a sign of professional wisdom.", judge:"Judicial isolation can make languishing harder to detect and harder to address. Please know that seeking support is a mark of strength — not a vulnerability in your role.", child_welfare:"If you are feeling disconnected in child welfare, the system has often failed you as much as anything else. Recovery is possible. This does not have to be the end of your story in this field." },
+        profMsg:{ juvenile_justice:"Research consistently shows that disconnection in juvenile justice professionals often precedes the field's most significant departures. You are worth retaining — and more importantly, you are worth supporting.", educator:"Many educators describe this state as going through the motions. You deserve more than that — and so do the students depending on you. Recovery starts with naming what is happening.", attorney:"Legal professionals rarely discuss languishing openly, yet the bar has among the highest burnout rates of any profession. You are not alone, and reaching out is a sign of professional wisdom.", judge:"Judicial isolation can make languishing harder to detect and harder to address. Please know that seeking support is a mark of strength — not a vulnerability in your role.", child_welfare:"If you are feeling disconnected in child welfare, the system has often failed you as much as anything else. Recovery is possible. This does not have to be the end of your story in this field.", law_enforcement:"Going numb or cynical is so common across these professions that it can start to feel normal — but disconnection is a signal, not a personality. It often precedes the departures and the hard outcomes the field can least afford. Reaching out is a mark of professional strength, not a liability.", clergy:"Spiritual dryness and going through the motions are rarely spoken aloud from the pulpit, yet they are common and recognizable. The disconnection you may feel is not a verdict on your calling — it is a signal that needs tending. Clergy peer groups and spiritual direction exist for exactly this." },
         cta:"Fidescope offers individual consultation and organizational wellness support. Recovery is possible — and it starts with a conversation.",
         crisis:false,
       },
@@ -122,7 +146,7 @@
         label:"Crisis", tagline:"You are carrying too much. Please don't carry it alone.",
         color:C.danger, badge:"rgba(155,32,32,0.12)", border:"rgba(155,32,32,0.4)", icon:"◉",
         general:"What you are experiencing has a name — secondary traumatic stress — and it is not a personal failure. It is an occupational injury. Right now, you deserve real support, not a pitch for consulting services.",
-        profMsg:{ juvenile_justice:"The weight of working daily with traumatized youth carries a real and documented cost. You gave this work everything you had. Now it is time to let others help carry you.", educator:"You have been absorbing the pain of your students — often without acknowledgment or support. That empathy is your gift, and right now, it is hurting you. Please reach out.", attorney:"The law asks you to hold space for others' pain with very little room for your own. What you are feeling is the accumulation of that cost. Help is available and you deserve it.", judge:"Judicial authority cannot shield you from the human toll of what you witness and decide. Please reach out to a trusted colleague, clinician, or resource today — not tomorrow.", child_welfare:"Child welfare workers who reach this point have often been failed by under-resourced systems long before this moment. You matter — as a whole person, not just a worker." },
+        profMsg:{ juvenile_justice:"The weight of working daily with traumatized youth carries a real and documented cost. You gave this work everything you had. Now it is time to let others help carry you.", educator:"You have been absorbing the pain of your students — often without acknowledgment or support. That empathy is your gift, and right now, it is hurting you. Please reach out.", attorney:"The law asks you to hold space for others' pain with very little room for your own. What you are feeling is the accumulation of that cost. Help is available and you deserve it.", judge:"Judicial authority cannot shield you from the human toll of what you witness and decide. Please reach out to a trusted colleague, clinician, or resource today — not tomorrow.", child_welfare:"Child welfare workers who reach this point have often been failed by under-resourced systems long before this moment. You matter — as a whole person, not just a worker.", law_enforcement:"Repeated exposure to trauma, danger, and loss exacts a documented toll — one no uniform or training can shield you from, on patrol, inside a facility, or on an emergency call. What you are feeling is an occupational injury, not a failure of toughness. Please reach out today — to a trusted peer, a chaplain, an EAP, or a clinician who understands first-responder work.", clergy:"You have absorbed the grief, crises, and traumas of those you shepherd — often with no one tending to you. What you are carrying has a name, and it is an occupational injury, not a spiritual failing. Please reach out today — to a trusted colleague, your judicatory or denominational support, or a clergy-competent clinician." },
         resources:true, crisis:true,
       },
     };
@@ -233,9 +257,11 @@
       y+=4;
 
       if(result.crisis){
+        const resList = resourcesFor(profession);
+        const boxH = 15 + resList.length*8;
         doc.setDrawColor(155,32,32);
         doc.setLineWidth(0.3);
-        doc.roundedRect(m,y,W-m*2,48,2,2,"S");
+        doc.roundedRect(m,y,W-m*2,boxH,2,2,"S");
         doc.setFont("helvetica","bold");
         doc.setFontSize(9);
         doc.setTextColor(155,32,32);
@@ -243,8 +269,8 @@
         doc.setFont("helvetica","normal");
         doc.setFontSize(9);
         doc.setTextColor(13,43,69);
-        ["988 Suicide & Crisis Lifeline: Call or text 988","Crisis Text Line: Text HOME to 741741","SAMHSA Helpline: 1-800-662-4357","Employee Assistance Program (EAP): Contact your HR office"].forEach((r,i)=>{ doc.text(r,m+4,y+15+(i*8)); });
-        y+=56;
+        resList.forEach((r,i)=>{ doc.text(r.pdf || `${r.name}: ${r.detail}`, m+4, y+15+(i*8)); });
+        y+=boxH+8;
       }
 
       doc.setFont("helvetica","bold");
@@ -644,12 +670,7 @@ Take the FWI™ at: https://fidescope.com/fwi
                 <div style={{ ...S.lbl, color:"#E07070", marginBottom:"12px" }}>Support Resources — Please Reach Out</div>
                 <p style={{ ...S.body, color:C.cream, fontSize:"17px", marginBottom:"20px", lineHeight:1.7 }}>If you are in crisis or experiencing thoughts of self-harm, please reach out now:</p>
                 <div style={{ display:"flex", flexDirection:"column", gap:"10px" }}>
-                  {[
-                    { name:"988 Suicide & Crisis Lifeline", detail:"Call or text 988 · Available 24/7" },
-                    { name:"Crisis Text Line",              detail:"Text HOME to 741741" },
-                    { name:"SAMHSA Helpline",               detail:"1-800-662-4357 · Mental health & substance use support" },
-                    { name:"Employee Assistance Program (EAP)", detail:"Contact your agency's HR or benefits office" },
-                  ].map(r => (
+                  {resourcesFor(profession).map(r => (
                     <div key={r.name} style={{ background:"rgba(0,0,0,0.2)", borderRadius:"6px", padding:"14px 18px" }}>
                       <div style={{ fontFamily:"'Jost',sans-serif", fontWeight:600, color:C.cream, fontSize:"15px" }}>{r.name}</div>
                       <div style={{ fontFamily:"'Jost',sans-serif", color:"rgba(248,244,238,0.5)", fontSize:"13px", marginTop:"2px" }}>{r.detail}</div>
@@ -716,7 +737,7 @@ Take the FWI™ at: https://fidescope.com/fwi
 
       const total = subs.length;
       const quadrantData = Object.keys(RESULTS).map(q=>({ name:RESULTS[q].label, value:subs.filter(s=>s.quadrant===q).length, fill:Q_COLORS[q] }));
-      const profData = PROFESSIONS.map((p,i)=>({ name:p.label.split("/")[0].trim().split(" ").slice(0,2).join(" "), value:subs.filter(s=>s.profession===p.id).length, fill:["#2279A0","#1A7A4A","#C89B3C","#9B2020","#7A5090"][i] }));
+      const profData = PROFESSIONS.map((p,i)=>({ name:p.label.split("/")[0].trim().split(" ").slice(0,2).join(" "), value:subs.filter(s=>s.profession===p.id).length, fill:["#2279A0","#1A7A4A","#C89B3C","#9B2020","#7A5090","#0E6B6B","#B5824A"][i] }));
       const avgCS  = total ? (subs.reduce((s,x)=>s+x.scores.cs,0)/total).toFixed(1)  : 0;
       const avgBO  = total ? (subs.reduce((s,x)=>s+x.scores.bo,0)/total).toFixed(1)  : 0;
       const avgSTS = total ? (subs.reduce((s,x)=>s+x.scores.sts,0)/total).toFixed(1) : 0;
