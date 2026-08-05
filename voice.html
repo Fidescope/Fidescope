@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Your Voice &middot; Social Services Division</title>
+<style>
+  :root{
+    --navy:#0D2B45;
+    --teal:#1A5C7A;
+    --gold:#C89B3C;
+    --gold-ink:#8A6717;
+    --paper:#FFFFFF;
+    --tint:#F2F5F7;
+    --rule:#DEE6EB;
+    --ink:#16232E;
+    --muted:#5B6B78;
+    --serif: Georgia, "Iowan Old Style", "Times New Roman", serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0; background:var(--tint); color:var(--ink);
+    font-family:var(--sans); font-size:17px; line-height:1.55;
+  }
+  .wrap{max-width:660px; margin:0 auto; padding:0 20px 72px;}
+
+  /* ---- masthead ---- */
+  header{background:var(--navy); color:#fff; margin:0 -20px 0; padding:34px 24px 30px;}
+  .eyebrow{
+    font-size:11.5px; font-weight:700; letter-spacing:.16em; text-transform:uppercase;
+    color:var(--gold); margin:0 0 10px;
+  }
+  h1{font-family:var(--serif); font-size:34px; line-height:1.12; font-weight:700; margin:0 0 12px;}
+  .sub{margin:0; color:#CFDDE6; font-size:16px;}
+
+  /* ---- signature: the anonymity panel ---- */
+  .promise{
+    background:var(--paper); border-left:5px solid var(--gold);
+    padding:22px 22px 18px; margin:0 -20px; box-shadow:0 1px 0 var(--rule);
+  }
+  .promise h2{
+    font-size:11.5px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--gold-ink); margin:0 0 12px;
+  }
+  .promise ul{margin:0; padding:0; list-style:none;}
+  .promise li{
+    position:relative; padding-left:26px; margin-bottom:9px; font-size:16px;
+  }
+  .promise li:last-child{margin-bottom:0;}
+  .promise li::before{
+    content:""; position:absolute; left:4px; top:9px;
+    width:9px; height:9px; border-radius:50%; background:var(--teal);
+  }
+  .promise strong{font-weight:700; color:var(--navy);}
+
+  /* ---- body ---- */
+  main{background:var(--paper); margin:0 -20px; padding:26px 22px 30px;}
+  .lede{margin:0 0 26px; font-size:16.5px; color:var(--ink);}
+
+  .field{margin-bottom:26px;}
+  label{display:block; font-family:var(--serif); font-size:19px; font-weight:700; color:var(--navy); margin-bottom:5px;}
+  .hint{display:block; font-size:14.5px; color:var(--muted); margin-bottom:10px;}
+  textarea, select{
+    width:100%; font-family:var(--sans); font-size:16.5px; color:var(--ink);
+    border:1.5px solid var(--rule); border-radius:6px; background:#FCFDFE;
+    padding:12px 13px; transition:border-color .15s, box-shadow .15s;
+  }
+  textarea{min-height:118px; resize:vertical; line-height:1.5;}
+  select{appearance:none; background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='9'><path d='M1 1l6 6 6-6' fill='none' stroke='%235B6B78' stroke-width='2'/></svg>"); background-repeat:no-repeat; background-position:right 14px center;}
+  textarea:focus, select:focus{
+    outline:none; border-color:var(--teal); box-shadow:0 0 0 3px rgba(26,92,122,.16);
+  }
+  textarea:focus-visible, select:focus-visible, button:focus-visible{outline:3px solid var(--teal); outline-offset:2px;}
+
+  .caution{
+    background:var(--tint); border-radius:6px; padding:13px 15px; margin:0 0 26px;
+    font-size:14.5px; color:var(--muted);
+  }
+  .caution strong{color:var(--navy);}
+
+  button{
+    width:100%; border:0; border-radius:6px; background:var(--navy); color:#fff;
+    font-family:var(--sans); font-size:17px; font-weight:700; letter-spacing:.01em;
+    padding:15px 20px; cursor:pointer; transition:background .15s;
+  }
+  button:hover{background:var(--teal);}
+  button[disabled]{background:var(--muted); cursor:default;}
+
+  .status{margin-top:14px; font-size:15.5px; min-height:22px;}
+  .status.err{color:#8A2B1F;}
+
+  /* ---- thank-you ---- */
+  .done{display:none; text-align:center; padding:34px 10px 26px;}
+  .done.on{display:block;}
+  .done h2{font-family:var(--serif); font-size:27px; color:var(--navy); margin:0 0 12px;}
+  .done p{margin:0 auto; max-width:430px; color:var(--muted); font-size:16.5px;}
+  form.off{display:none;}
+
+  footer{padding:22px 4px 0; font-size:13.5px; color:var(--muted);}
+  footer a{color:var(--teal);}
+
+  @media (max-width:520px){
+    h1{font-size:28px;}
+    header{padding:28px 20px 24px;}
+  }
+  @media (prefers-reduced-motion:reduce){*{transition:none !important;}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <p class="eyebrow">DC Superior Court &middot; Social Services Division</p>
+    <h1>What would actually help?</h1>
+    <p class="sub">An anonymous channel for your concerns and suggestions about compassion fatigue and burnout.</p>
+  </header>
+
+  <section class="promise">
+    <h2>Before you write anything</h2>
+    <ul>
+      <li>This form asks for <strong>nothing that identifies you</strong> &mdash; no name, no email, no login.</li>
+      <li>Responses go to <strong>Dr. Songu-Mbriwa</strong>, and reach Division leadership only as a <strong>summary</strong> &mdash; never as individual submissions.</li>
+      <li>Selecting your role is <strong>optional</strong>. Skip it if your group is small enough that it would narrow things down.</li>
+      <li>Nothing here goes in <strong>any personnel file</strong>.</li>
+      <li>Open through <strong>Friday, August 21</strong> &mdash; respond now or later, whenever it comes to you.</li>
+    </ul>
+  </section>
+
+  <main>
+    <p class="lede">The study you just heard about came from officers describing this work in their own words. This is the same idea, turned toward this Division. Write as much or as little as you want.</p>
+
+    <form id="f" action="https://formspree.io/f/xnpaqdky" method="POST">
+
+      <div class="field">
+        <label for="role">Your role</label>
+        <span class="hint">Optional. Helps sort the themes &mdash; leave it blank if you&rsquo;d rather not say.</span>
+        <select id="role" name="role">
+          <option value="">Prefer not to say</option>
+          <option>Executive management</option>
+          <option>Manager or supervisor</option>
+          <option>Probation officer</option>
+          <option>Support staff</option>
+          <option>Other</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="drains">What takes the most out of you?</label>
+        <span class="hint">The part of the work that leaves you depleted &mdash; not necessarily the hardest part.</span>
+        <textarea id="drains" name="what_drains_you" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="helps">What would actually help?</label>
+        <span class="hint">Be specific. &ldquo;More support&rdquo; is hard to act on; &ldquo;coverage when a case goes sideways&rdquo; is not.</span>
+        <textarea id="helps" name="what_would_help" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="stop">What should we stop doing?</label>
+        <span class="hint">Optional. Sometimes the fix is subtraction.</span>
+        <textarea id="stop" name="what_to_stop"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="more">Anything else</label>
+        <span class="hint">Optional.</span>
+        <textarea id="more" name="anything_else" style="min-height:84px"></textarea>
+      </div>
+
+      <div class="caution">
+        <strong>One request:</strong> please leave out anything that would identify a youth, a family, a case, or a colleague. Describe the pattern rather than the incident &mdash; it keeps this safe for everyone, including you.
+      </div>
+
+      <button type="submit" id="btn">Send my response</button>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </form>
+
+    <div class="done" id="done">
+      <h2>Received. Thank you.</h2>
+      <p>Your response arrived without anything attached to it. What you wrote will be read, grouped with the rest, and brought back to the Division as themes.</p>
+    </div>
+  </main>
+
+  <footer>
+    Fidescope Consulting Group, LLC &middot; <a href="https://fidescope.com">fidescope.com</a><br>
+    Wellness self-assessment: <a href="https://fidescope.com/fwi">fidescope.com/fwi</a>
+  </footer>
+
+</div>
+
+<script>
+(function(){
+  var form = document.getElementById('f');
+  var btn = document.getElementById('btn');
+  var status = document.getElementById('status');
+  var done = document.getElementById('done');
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    status.className = 'status';
+    status.textContent = '';
+    btn.disabled = true;
+    btn.textContent = 'Sending\u2026';
+
+    fetch(form.action, {
+      method: 'POST',
+      body: new FormData(form),
+      headers: { 'Accept': 'application/json' }
+    }).then(function(r){
+      if (r.ok) {
+        form.classList.add('off');
+        done.classList.add('on');
+        done.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } else {
+        throw new Error('rejected');
+      }
+    }).catch(function(){
+      btn.disabled = false;
+      btn.textContent = 'Send my response';
+      status.className = 'status err';
+      status.textContent = 'That didn\u2019t send. Check your connection and try once more.';
+    });
+  });
+})();
+</script>
+</body>
+</html>
